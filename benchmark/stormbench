@@ -58,6 +58,10 @@ def datacleanse(global_config, benchmark_config):
     benchmark = "storm.benchmark.benchmarks.stocktweets.DataCleanse"
     exec_producer_benchmark(benchmark, global_config, benchmark_config)
 
+def kafkasol(global_config, benchmark_config):
+    benchmark = "storm.benchmark.benchmarks.KafkaSOL"
+    exec_producer_benchmark(benchmark, global_config, benchmark_config)
+
 def exec_producer_benchmark(benchmark, global_config, benchmark_config):
     storm_cmd, jar_file, main_class, topology_name, all_args = read_config(global_config, benchmark_config)
     producer_class, producer_name, producer_args = read_producer_config(global_config, benchmark_config)
@@ -138,7 +142,7 @@ def load_config(file):
 benchmarks = {"wordcount": wordcount, "sol": sol, "rollingsort": rollingsort,
               "rollingcount": rollingcount, "drpc": drpc, "grep": grep,
               "trident": trident, "pageview": pageview, "uniquevisitor": uniquevisitor,
-              "datacleanse": datacleanse}
+              "datacleanse": datacleanse, "kafkasol": kafkasol}
 def main():
     if len(sys.argv) <= 1:
         print_usage()

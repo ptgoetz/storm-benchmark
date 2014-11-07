@@ -1,0 +1,15 @@
+topology.name: "KAFKA_SOL"
+topology.level: 2
+component.spout_num: 4
+component.bolt_num: 8
+
+# kafka configurations
+topic: "fileread"
+client_id: "kafka_sol"
+
+# producer configurations
+producer.class: "storm.benchmark.tools.producer.kafka.FileReadKafkaProducer"
+producer.topology.name: "FileReadKafkaProducer"
+producer.topic: topic
+producer.component.spout_num: 4
+producer.component.bolt_num: 4

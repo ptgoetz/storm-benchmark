@@ -71,6 +71,7 @@ public final class KafkaUtils {
       }
     }
     config.scheme = scheme;
+    config.forceFromStart = true;
     return config;
   }
 
