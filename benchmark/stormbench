@@ -96,7 +96,7 @@ def read_config(global_config, benchmark_config):
     all_config = {}
     all_args = []
 
-    all_config.extend(read_global_config(global_config))
+    all_config.update(read_global_config(global_config))
     # benchmark_config could override global_config
     for k, v in benchmark_config.iteritems():
         all_config[k] = v
