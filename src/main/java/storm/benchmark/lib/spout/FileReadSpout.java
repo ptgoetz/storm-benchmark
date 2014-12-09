@@ -38,7 +38,8 @@ public class FileReadSpout extends BaseRichSpout {
   public static final String FIELDS = "sentence";
 
   public final boolean ackEnabled;
-  public final FileReader reader;
+  private transient FileReader reader;
+  private String file;
 	private SpoutOutputCollector collector;
 
   private long count = 0;
@@ -54,10 +55,12 @@ public class FileReadSpout extends BaseRichSpout {
   }
 
   public FileReadSpout(boolean ackEnabled, String file) {
-    this(ackEnabled, new FileReader(file));
+    this.ackEnabled = ackEnabled;
+    this.file = file;
   }
 
-  public FileReadSpout(boolean ackEnabled, FileReader reader) {
+  // used for testing
+  FileReadSpout(boolean ackEnabled, FileReader reader) {
     this.ackEnabled = ackEnabled;
     this.reader = reader;
   }
@@ -66,6 +69,10 @@ public class FileReadSpout extends BaseRichSpout {
 	public void open(Map conf, TopologyContext context,
 			SpoutOutputCollector collector) {
 		this.collector = collector;
+      // for tests, reader will not be null
+      if(this.reader == null) {
+        this.reader = new FileReader(this.file);
+      }
 	}
 
 	@Override

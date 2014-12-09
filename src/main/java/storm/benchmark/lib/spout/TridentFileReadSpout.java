@@ -37,7 +37,8 @@ public class TridentFileReadSpout implements IBatchSpout {
   public static final String FIELDS = "sentence";
 
   private final int maxBatchSize;
-  private final FileReader reader;
+  private transient FileReader reader;
+  private String file;
   private final HashMap<Long, List<String>> batches = new HashMap<Long, List<String>>();
 
   public TridentFileReadSpout(int maxBatchSize) {
@@ -46,16 +47,17 @@ public class TridentFileReadSpout implements IBatchSpout {
 
   public TridentFileReadSpout(int maxBatchSize, String file) {
     this.maxBatchSize = maxBatchSize;
-    this.reader = new FileReader(file);
+    this.file = file;
   }
 
-  public TridentFileReadSpout(int maxBatchSize, FileReader reader) {
+  TridentFileReadSpout(int maxBatchSize, FileReader reader) {
     this.maxBatchSize = maxBatchSize;
     this.reader = reader;
   }
 
   @Override
   public void open(Map conf, TopologyContext context) {
+    this.reader = new FileReader(this.file);
   }
 
   @Override
