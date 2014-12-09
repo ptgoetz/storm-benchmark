@@ -34,6 +34,8 @@ import org.apache.thrift7.TException;
 import storm.benchmark.util.FileUtils;
 
 import java.io.PrintWriter;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 
@@ -58,7 +60,9 @@ public class DRPCMetricsCollector implements IMetricsCollector {
 
   @Override
   public void run() {
-    long now = System.currentTimeMillis();
+    Date date = new Date();
+    SimpleDateFormat dateFormat = new SimpleDateFormat(MetricsCollectorConfig.DATE_FORMAT);
+    long now = date.getTime();
 
     final long endTime = now + config.totalTime;
     long totalLat = 0L;
@@ -67,9 +71,9 @@ public class DRPCMetricsCollector implements IMetricsCollector {
       final String name = config.name;
       final String path = config.path;
       final String confFile = String.format(
-              MetricsCollectorConfig.CONF_FILE_FORMAT, path, name, now);
+              MetricsCollectorConfig.CONF_FILE_FORMAT, path, name, dateFormat.format(now));
       final String dataFile = String.format(
-              MetricsCollectorConfig.DATA_FILE_FORMAT, path, name, now);
+              MetricsCollectorConfig.DATA_FILE_FORMAT, path, name, dateFormat.format(now));
       PrintWriter confWriter = FileUtils.createFileWriter(path, confFile);
       PrintWriter dataWriter = FileUtils.createFileWriter(path, dataFile);
       config.writeStormConfig(confWriter);

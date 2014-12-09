@@ -29,6 +29,7 @@ import storm.benchmark.util.FileUtils;
 import storm.benchmark.util.MetricsUtils;
 
 import java.io.PrintWriter;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class BasicMetricsCollector implements IMetricsCollector {
@@ -92,7 +93,9 @@ public class BasicMetricsCollector implements IMetricsCollector {
 
   @Override
   public void run() {
-    long now = System.currentTimeMillis();
+    Date date = new Date();
+    SimpleDateFormat dateFormat = new SimpleDateFormat(MetricsCollectorConfig.DATE_FORMAT);
+    long now = date.getTime();
     long endTime = now + config.totalTime;
     MetricsState state = new MetricsState();
     state.startTime = now;
@@ -101,9 +104,9 @@ public class BasicMetricsCollector implements IMetricsCollector {
     final String path = config.path;
     final String name = config.name;
     final String confFile = String.format(
-            MetricsCollectorConfig.CONF_FILE_FORMAT, path, name, now);
+            MetricsCollectorConfig.CONF_FILE_FORMAT, path, name, dateFormat.format(date));
     final String dataFile = String.format(
-            MetricsCollectorConfig.DATA_FILE_FORMAT, path, name, now);
+            MetricsCollectorConfig.DATA_FILE_FORMAT, path, name, dateFormat.format(date));
     PrintWriter confWriter = FileUtils.createFileWriter(path, confFile);
     PrintWriter dataWriter = FileUtils.createFileWriter(path, dataFile);
     config.writeStormConfig(confWriter);

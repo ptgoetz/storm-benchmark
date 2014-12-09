@@ -31,8 +31,9 @@ import java.util.TreeMap;
 public class MetricsCollectorConfig {
   private static final Logger LOG = Logger.getLogger(MetricsCollectorConfig.class);
 
-  public static final String CONF_FILE_FORMAT = "%s/%s_metrics_%d.yaml";
-  public static final String DATA_FILE_FORMAT = "%s/%s_metrics_%d.csv";
+  public static final String CONF_FILE_FORMAT = "%s/%s_metrics_%s.yaml";
+  public static final String DATA_FILE_FORMAT = "%s/%s_metrics_%s.csv";
+  public static final String DATE_FORMAT = "dd-MM-yyyy_HH.mm.ss";
 
   public static final String METRICS_POLL_INTERVAL = "metrics.poll";
   public static final String METRICS_TOTAL_TIME = "metrics.time";
