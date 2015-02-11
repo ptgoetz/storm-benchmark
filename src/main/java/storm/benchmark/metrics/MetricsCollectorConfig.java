@@ -33,7 +33,7 @@ public class MetricsCollectorConfig {
 
   public static final String CONF_FILE_FORMAT = "%s/%s_metrics_%s.yaml";
   public static final String DATA_FILE_FORMAT = "%s/%s_metrics_%s.csv";
-  public static final String DATE_FORMAT = "dd-MM-yyyy_HH.mm.ss";
+  public static final String DATE_FORMAT = "MM-dd-yyyy_HH.mm.ss";
 
   public static final String METRICS_POLL_INTERVAL = "metrics.poll";
   public static final String METRICS_TOTAL_TIME = "metrics.time";
@@ -45,8 +45,10 @@ public class MetricsCollectorConfig {
 
   // storm configuration
   public final Config stormConfig;
-  // storm benchmarks name
+  // storm topology name
   public final String name;
+  // benchmark label
+  public final String label;
   // How often should metrics be collected
   public final int pollInterval;
   // How long should the benchmark run for
@@ -56,8 +58,15 @@ public class MetricsCollectorConfig {
 
   public MetricsCollectorConfig(Config stormConfig) {
     this.stormConfig  = stormConfig;
-    name = (String) Utils.get(
+    String labelStr = (String)stormConfig.get("benchmark.label");
+    this.name = (String) Utils.get(
             stormConfig, Config.TOPOLOGY_NAME, StormBenchmark.DEFAULT_TOPOLOGY_NAME);
+    if(labelStr == null){
+      LOG.warn("'benchmark.label' not found in config. Defaulting to topology name");
+      labelStr = this.name;
+    }
+    this.label = labelStr;
+
     pollInterval = BenchmarkUtils.getInt(
             stormConfig, METRICS_POLL_INTERVAL, DEFAULT_POLL_INTERVAL);
     totalTime = BenchmarkUtils.getInt(

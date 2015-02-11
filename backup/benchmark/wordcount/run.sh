@@ -14,49 +14,39 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-run_benchmark() {
-  check
-  run_topology
-  kill_topology
-}
+# load global configurations
+
+CUR_DIR=`dirname "$0"`
+BASE_DIR=$CUR_DIR/..
+. $BASE_DIR/conf/config.sh
+. $BASE_DIR/bin/functions.sh
+
+# benchmarks configurations
+
+TOPOLOGY_CLASS=storm.benchmark.benchmarks.FileReadWordCount
+TOPOLOGY_NAME=WordCount
+
+# 2 workers
+# SPOUT_NUM=18
+# SPLIT_NUM=10
+# COUNT_NUM=30
+# WORKERS=2
+# ACKERS=6
 
 
-check() {
-  if [ ! -e $JAR ]; then
-    echo "JAR file not found; exit..."
-    exit -1
-  fi
-}
-
-run_topology() {
-  OS="`uname`"
-  SED_OPT="-r"
-  case $OS in
-    'Darwin') 
-      SED_OPT="-E"
-      ;;
-    *) ;;
-  esac
-  if [ -n "$KAFKA_CONF" ]; then
-    CONFIG=$TOPOLOGY_CONF,$METRICS_CONF,$KAFKA_CONF
-  else
-    CONFIG=$TOPOLOGY_CONF,$METRICS_CONF
-  fi
-  CONFIG=`echo $CONFIG | sed $SED_OPT "s/,/ -c /g"`
-  echo $CONFIG
-  $BIN jar $JAR $MAIN_CLASS $TOPOLOGY_CLASS -c $CONFIG
-}
+# 3 workers
+SPOUT_NUM=27
+SPLIT_NUM=15
+COUNT_NUM=45
+WORKERS=3
+ACKERS=9
 
 
-kill_topology() {
-  $BIN kill $TOPOLOGY_NAME
-}
+PENDING=200
 
-run_producer() {
-  sh $PRODUCER_DIR/run.sh
-}
 
-kill_producer() {
-  $BIN kill $PRODUCER_NAME
-}
+TOPOLOGY_CONF=topology.name=$TOPOLOGY_NAME,topology.workers=$WORKERS,topology.acker.executors=$ACKERS,topology.max.spout.pending=$PENDING,component.spout_num=$SPOUT_NUM,component.split_bolt_num=$SPLIT_NUM,component.count_bolt_num=$COUNT_NUM
 
+
+echo "========== running WordCount =========="
+run_benchmark

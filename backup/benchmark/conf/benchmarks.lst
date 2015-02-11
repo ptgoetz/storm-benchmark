@@ -1,0 +1,11 @@
+## Comment out benchmarks with "#" if you don't want to run it.
+#wordcount
+SOL
+#rollingcount
+#trident
+#tridentwordcount
+#grep
+#drpc
+#pageview
+#uniquevisitor
+#dataclean

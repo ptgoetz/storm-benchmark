@@ -15,10 +15,10 @@
 # limitations under the License.
 
 # Where is the storm binary
-BIN=/usr/lib/storm/bin/storm
+BIN=`which storm`
 
 # Absolute path to the stom-benchmark-with-dependencies.jar
-JAR=/root/storm-benchmark-0.1.0-jar-with-dependencies.jar
+JAR=/Users/tgoetz/Projects/apache/storm-benchmark/target/storm-benchmark-0.1.0-jar-with-dependencies.jar
 
 # Please don't modify this
 MAIN_CLASS=storm.benchmark.tools.Runner
@@ -30,7 +30,7 @@ METRICS_POLL_INTERVAL=60000 # 60 secs
 METRICS_TOTAL_TIME=300000  # 5 mins
 
 # Where we store the metrics reports. The metrics contains the performance and throughput information.
-METRICS_PATH=/root/benchmark/reports
+METRICS_PATH=/Users/tgoetz/Projects/apache/storm-benchmark/reports
 METRICS_CONF=metrics.time=$METRICS_TOTAL_TIME,metrics.poll=$METRICS_POLL_INTERVAL,metrics.path=$METRICS_PATH
 
 # The default workers we use for the benchmark.

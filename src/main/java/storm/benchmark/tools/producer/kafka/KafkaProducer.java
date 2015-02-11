@@ -31,6 +31,7 @@ import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Values;
 import backtype.storm.utils.Utils;
 import storm.benchmark.api.IProducer;
+import storm.benchmark.api.Producer;
 import storm.benchmark.util.BenchmarkUtils;
 import storm.benchmark.util.KafkaUtils;
 import storm.kafka.bolt.KafkaBolt;
@@ -43,7 +44,7 @@ import java.util.Random;
  * KafkaProducer is itself a Storm benchmarks which consists of a KafkaProducerSpout and a KafkaBolt
  * Subclass could provide its own Spout (e.g. read from file, generate message randomly)
  */
-public abstract class KafkaProducer  implements IProducer {
+public abstract class KafkaProducer  extends Producer {
 
   public static final String SPOUT_ID = "spout";
   public static final String SPOUT_NUM = "producer.spout_num";

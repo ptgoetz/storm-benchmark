@@ -1,0 +1,77 @@
+benchmark-suite:
+  - benchmark.enabled: false
+    benchmark.label: "trident-wordcount"
+    topology.class: storm.benchmark.benchmarks.TridentFileReadWordCount
+    #metrics.poll.interval: 60000
+    metrics.poll: 60000
+
+    #benchmark.runtime: 300000
+    metrics.time:  300000
+
+    #benchmark.report.dir: /Users/tgoetz/tmp
+    metrics.path: /Users/tgoetz/tmp
+
+    topology.config:
+      #storm config params
+      topology.name: "wordcount"
+      topology.acker.executors: 2
+      topology.max.spout.pending: 4
+      topology.workers: 2
+
+      # TridentFileReadWordCount config params
+      trident.spout.batch.size: 2000
+      component.spout_num: 1
+      component.count_bolt_num: 4
+
+  - benchmark.enabled: false
+    benchmark.label: "core-wordcount"
+    topology.class: storm.benchmark.benchmarks.FileReadWordCount
+    #metrics.poll.interval: 60000
+    metrics.poll: 60000
+
+    #benchmark.runtime: 300000
+    metrics.time:  300000
+
+    #benchmark.report.dir: /Users/tgoetz/tmp
+    metrics.path: /Users/tgoetz/tmp
+
+    topology.config:
+      #storm config params
+      topology.name: "wordcount"
+      topology.acker.executors: 2
+      topology.max.spout.pending: 4
+      topology.workers: 2
+
+      # FileReadWordCount config params
+      component.spout_num: 1
+      component.split_bolt_num: 4
+      component.count_bolt_num: 4
+
+
+  - benchmark.enabled: true
+    benchmark.label: "speed-of-light"
+    topology.class: storm.benchmark.benchmarks.SOL
+    #metrics.poll.interval: 60000
+    metrics.poll: 60000
+
+    #benchmark.runtime: 300000
+    metrics.time:  300000
+
+    #benchmark.report.dir: /Users/tgoetz/tmp
+    metrics.path: /Users/tgoetz/tmp
+
+    topology.config:
+      #storm config params
+      topology.name: "sol"
+      topology.acker.executors: 2
+      topology.max.spout.pending: 4
+      topology.workers: 2
+
+      # SOL config params
+      component.spout_num: 1
+      component.split_bolt_num: 4
+      component.count_bolt_num: 4
+      # how many bolts in the topology
+      benchmarks.level: 1
+      # message size in bytes
+      message.size: 1024

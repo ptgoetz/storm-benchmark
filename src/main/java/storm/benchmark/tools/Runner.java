@@ -29,12 +29,15 @@ import org.apache.log4j.Logger;
 import org.apache.thrift7.TException;
 import org.apache.thrift7.protocol.TCompactProtocol;
 import org.apache.thrift7.transport.TIOStreamTransport;
-import storm.benchmark.api.IApplication;
-import storm.benchmark.api.IBenchmark;
-import storm.benchmark.api.IProducer;
+import org.yaml.snakeyaml.Yaml;
+import storm.benchmark.api.*;
 import storm.benchmark.metrics.IMetricsCollector;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.util.Map;
 
 /**
  * Runner is the main class of storm benchmark
@@ -57,18 +60,45 @@ public class Runner {
   public static void run(String name)
           throws ClassNotFoundException, IllegalAccessException,
           InstantiationException, AlreadyAliveException, InvalidTopologyException {
-    if (name.startsWith("storm.benchmark.benchmarks")) {
+      initConfig();
+      IApplication app = getApplicationFromName(name);
+    if (app instanceof Benchmark) {
       LOG.info("running benchmark " + name);
-      runBenchmark((IBenchmark) getApplicationFromName(name));
-    } else if (name.startsWith("storm.benchmark.tools.producer")) {
+      runBenchmark((IBenchmark) app);
+    } else if (app instanceof Producer) {
       LOG.info("running producer " + name);
-      runProducer((IProducer) getApplicationFromName(name));
+      runProducer((IProducer) app);
     } else {
       throw new RuntimeException(name + " is neither benchmark nor producer");
     }
   }
 
-  public static void runBenchmark(IBenchmark benchmark)
+    private static void initConfig(){
+        Yaml yaml = new Yaml();
+        File confFile = new File(System.getProperty("user.home"), ".storm/storm.yaml");
+        if(confFile.exists()) {
+
+            try {
+                Map<String, Object> localConf = (Map<String, Object>)yaml.load(new FileInputStream(confFile));
+                config.putAll(localConf);
+            } catch (FileNotFoundException e) {
+                LOG.warn("Local storm config not found.", e);
+            }
+
+        } else {
+            LOG.warn("Local storm config not found.");
+        }
+
+        config.putAll(Utils.readCommandLineOpts());
+    }
+
+    public static IApplication getApplicationFromName(String name)
+            throws ClassNotFoundException, IllegalAccessException, InstantiationException {
+        return (IApplication) Class.forName(name).newInstance();
+    }
+
+
+    public static void runBenchmark(IBenchmark benchmark)
           throws AlreadyAliveException, InvalidTopologyException,
           ClassNotFoundException, IllegalAccessException, InstantiationException {
     runApplication(benchmark);
@@ -83,14 +113,9 @@ public class Runner {
   }
 
 
-  public static IApplication getApplicationFromName(String name)
-          throws ClassNotFoundException, IllegalAccessException, InstantiationException {
-    return (IApplication) Class.forName(name).newInstance();
-  }
 
   private static void runApplication(IApplication app)
           throws AlreadyAliveException, InvalidTopologyException {
-    config.putAll(Utils.readStormConfig());
     String name = (String) config.get(Config.TOPOLOGY_NAME);
     topology = app.getTopology(config);
     StormSubmitter.submitTopology(name, config, topology);

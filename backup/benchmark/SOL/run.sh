@@ -21,20 +21,22 @@ BASE_DIR=$CUR_DIR/..
 . $BASE_DIR/conf/config.sh
 . $BASE_DIR/bin/functions.sh
 
-# benchmarks configurations
+# benchmarks configuration
 
-TOPOLOGY_CLASS=storm.benchmark.benchmarks.FileReadWordCount
-TOPOLOGY_NAME=WordCount
+TOPOLOGY_CLASS=storm.benchmark.benchmarks.SOL
+TOPOLOGY_NAME=SOL
 
-SPOUT_NUM=64
-SPLIT_NUM=64
-COUNT_NUM=64
+WORKERS=3
+ACKERS=3
+PENDING=200
+TOPOLOGY_LEVEL=1
+MESSAGE_SIZE=1024
 
-WORKERS=16
-ACKERS=16
+SPOUT_NUM=12
+BOLT_NUM=12
 
-TOPOLOGY_CONF=topology.name=$TOPOLOGY_NAME,topology.workers=$WORKERS,topology.acker.executors=$ACKERS,topology.max.spout.pending=$PENDING,component.spout_num=$SPOUT_NUM,component.split_bolt_num=$SPLIT_NUM,component.count_bolt_num=$COUNT_NUM
+TOPOLOGY_CONF=topology.name=$TOPOLOGY_NAME,topology.workers=$WORKERS,topology.acker.executors=$ACKERS,topology.max.spout.pending=$PENDING,benchmarks.level=$TOPOLOGY_LEVEL,component.spout_num=$SPOUT_NUM,component.bolt_num=$BOLT_NUM,message.size=$MESSAGE_SIZE
 
-
-echo "========== running WordCount =========="
+echo "========== running SOL =========="
 run_benchmark
+

@@ -89,6 +89,8 @@ public class BasicMetricsCollector implements IMetricsCollector {
     msgSize = collectThroughputMB ?
             BenchmarkUtils.getInt(stormConfig, RandomMessageSpout.MESSAGE_SIZE,
                     RandomMessageSpout.DEFAULT_MESSAGE_SIZE) : 0;
+
+    System.out.println("Message size: " + msgSize);
   }
 
   @Override
@@ -102,7 +104,7 @@ public class BasicMetricsCollector implements IMetricsCollector {
     state.lastTime = now;
 
     final String path = config.path;
-    final String name = config.name;
+    final String name = config.label;
     final String confFile = String.format(
             MetricsCollectorConfig.CONF_FILE_FORMAT, path, name, dateFormat.format(date));
     final String dataFile = String.format(
