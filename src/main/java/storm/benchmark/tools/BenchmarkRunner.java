@@ -1,5 +1,6 @@
 package storm.benchmark.tools;
 
+import org.apache.commons.cli.*;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.FileInputStream;
@@ -8,31 +9,66 @@ import java.util.ArrayList;
 import java.util.Map;
 
 public class BenchmarkRunner {
+
     public static void main(String[] args) throws Exception {
+
+        Options options = new Options();
+
+        Option runTimeOpt = OptionBuilder.hasArgs(1)
+                .withArgName("ms")
+                .withLongOpt("time")
+                .withDescription("How long to run each benchmark in ms.")
+                .create("t");
+        options.addOption(runTimeOpt);
+
+        Option pollTimeOpt = OptionBuilder.hasArgs(1)
+                .withArgName("ms")
+                .withLongOpt("poll")
+                .withDescription("Metrics polling interval in ms.")
+                .create("P");
+        options.addOption(pollTimeOpt);
+
+        Option reportPathOpt = OptionBuilder.hasArgs(1)
+                .withArgName("path")
+                .withLongOpt("path")
+                .withDescription("Directory where reports will be saved.")
+                .create("p");
+        options.addOption(reportPathOpt);
+
+
+        CommandLineParser parser = new BasicParser();
+        CommandLine cmd = parser.parse(options, args);
+
+        if(cmd.getArgs().length != 1) {
+            usage(options);
+            System.exit(1);
+        }
+
+        String[] argArray = cmd.getArgs();
+        runBenchmarks(cmd);
+        System.out.println("Benchmark run complete.");
+    }
+
+    private static void usage(Options options) {
+        HelpFormatter formatter = new HelpFormatter();
+        formatter.printHelp("storm-benchmark [options] <benchmark file>", options);
+    }
+
+    
+    public static void runBenchmarks(CommandLine cmd) throws Exception {
         Yaml yaml = new Yaml();
-        FileInputStream in = new FileInputStream("resources/benchmark_suite.yaml");
+
+        FileInputStream in = new FileInputStream((String) cmd.getArgList().get(0));
 
         Map<String, Object> suiteConf = (Map) yaml.load(in);
         in.close();
 
-        ArrayList<Map<String, Object>> benchmarks = (ArrayList<Map<String, Object>>)suiteConf.get("benchmark-suite");
+        ArrayList<Map<String, Object>> benchmarks = (ArrayList<Map<String, Object>>) suiteConf.get("benchmark-suite");
         System.out.println("Found " + benchmarks.size() + " benchmarks.");
-        for(Map<String, Object> config : benchmarks){
-            if((Boolean)config.get("benchmark.enabled") == true)
-            runTest((String)config.get("topology.class"), config);
+        for (Map<String, Object> config : benchmarks) {
+            if ((Boolean) config.get("benchmark.enabled") == true)
+                runTest((String) config.get("topology.class"), config);
         }
-
-        System.out.println();
-    }
-
-
-    public static void runSuite(Map<String, Object> suite) {
-
-    }
-
-
-    public static void runBenchmark(){
-
     }
 
     private static void runTest(String topologyClass, Map<String, Object> benchmarkConfig) throws Exception {
@@ -61,7 +97,7 @@ public class BenchmarkRunner {
 
     private static void killTopology(Map<String, Object> benchmarkConfig) throws Exception {
 
-        Map<String, Object> topConfig = (Map<String, Object>)benchmarkConfig.get("topology.config");
+        Map<String, Object> topConfig = (Map<String, Object>) benchmarkConfig.get("topology.config");
 //        String timeoutStr = (String) topConfig.get("topology.message.timeout.secs");
         String topologyName = (String) topConfig.get("topology.name");
 
@@ -87,33 +123,31 @@ public class BenchmarkRunner {
         int exitVal = proc.waitFor();
         System.out.println("exitVal=" + exitVal);
 
-        if(exitVal == 0){
+        if (exitVal == 0) {
             System.out.println("Waiting for topology to complete.");
             Thread.sleep(5000);
         }
     }
 
-    private static void addBenchmarkCommandOpts(ArrayList<String> cmd, Map<String, Object> config){
+    private static void addBenchmarkCommandOpts(ArrayList<String> cmd, Map<String, Object> config) {
         String[] opts = new String[]{"metrics.poll", "metrics.time", "metrics.path", "benchmark.label"};
-        for(String s : opts){
+        for (String s : opts) {
             cmd.add("-c");
             cmd.add(s + "=" + config.get(s));
         }
 
-        Map<String, Object> topConfig = (Map<String, Object>)config.get("topology.config");
-        for(String s : topConfig.keySet()){
+        Map<String, Object> topConfig = (Map<String, Object>) config.get("topology.config");
+        for (String s : topConfig.keySet()) {
             cmd.add("-c");
             cmd.add(s + "=" + topConfig.get(s));
         }
     }
 
 
-
-
     private static class StreamRedirect implements Runnable {
         private InputStream in;
 
-        public StreamRedirect(InputStream in){
+        public StreamRedirect(InputStream in) {
             this.in = in;
         }
 
@@ -127,7 +161,7 @@ public class BenchmarkRunner {
                 }
                 this.in.close();
                 System.out.println("Stream reader closed.");
-            } catch(Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
