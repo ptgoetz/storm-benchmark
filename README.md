@@ -37,7 +37,7 @@ BIN=/usr/lib/storm/bin/storm
 JAR=/root/storm-benchmark-0.1.0-jar-with-dependencies.jar
 
 # Please don't modify this
-MAIN_CLASS=storm.benchmark.tools.Runner
+MAIN_CLASS=Runner
 
 # We will pull the metrics from nimbus periodically. This defines the interval.
 METRICS_POLL_INTERVAL=60000 # 60 secs

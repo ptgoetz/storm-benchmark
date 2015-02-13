@@ -23,7 +23,7 @@ BASE_DIR=$CUR_DIR/../../..
 
 # benchmarks configuraitons
 
-TOPOLOGY_CLASS=storm.benchmark.tools.producer.kafka.FileReadKafkaProducer
+TOPOLOGY_CLASS=storm.benchmark.producers.kafka.FileReadKafkaProducer
 TOPOLOGY_NAME=FileReadKafkaProducer
 
 TOPIC="fileread"

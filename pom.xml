@@ -20,7 +20,7 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>storm</groupId>
+  <groupId>org.apache.storm</groupId>
   <artifactId>storm-benchmark</artifactId>
   <packaging>jar</packaging>
   <version>0.1.0</version>
@@ -169,7 +169,7 @@
           <includeProjectDependencies>true</includeProjectDependencies>
           <includePluginDependencies>false</includePluginDependencies>
           <classpathScope>compile</classpathScope>
-          <mainClass>storm.benchmark.tools.LocalRunner</mainClass>
+          <mainClass>org.apache.storm.benchmark.tools.LocalRunner</mainClass>
           <arguments>
             <argument>${benchmark}</argument>
           </arguments>

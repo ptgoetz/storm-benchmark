@@ -23,7 +23,7 @@ BASE_DIR=$CUR_DIR/../../..
 
 # benchmarks configuraitons
 
-TOPOLOGY_CLASS=storm.benchmark.tools.producer.kafka.PageViewKafkaProducer
+TOPOLOGY_CLASS=storm.benchmark.producers.kafka.PageViewKafkaProducer
 TOPOLOGY_NAME=PageViewKafkaProducer
 
 TOPIC="pageview"
