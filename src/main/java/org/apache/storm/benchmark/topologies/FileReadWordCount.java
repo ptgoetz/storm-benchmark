@@ -27,7 +27,7 @@ public class FileReadWordCount extends WordCount {
 
   @Override
   public StormTopology getTopology(Config config) {
-    spout = new FileReadSpout(BenchmarkUtils.ifAckEnabled(config));
+    spout = new FileReadSpout();
     return super.getTopology(config);
   }
 }

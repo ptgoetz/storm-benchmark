@@ -54,7 +54,7 @@ public class FileReadSpoutTest {
 
   @Test
   public void shouldDeclareOutputFields() {
-    FileReadSpout spout = new FileReadSpout(false, reader);
+    FileReadSpout spout = new FileReadSpout(reader);
 
     spout.declareOutputFields(declarer);
 
@@ -63,9 +63,10 @@ public class FileReadSpoutTest {
 
   @Test
   public void shouldEmitValueAndIdWhenAckEnabled() {
-    FileReadSpout spout = new FileReadSpout(true, reader);
-
-    spout.open(ANY_CONF, context, collector);
+    FileReadSpout spout = new FileReadSpout(reader);
+    HashMap<String, Object> conf = new HashMap<String, Object>();
+      conf.put("topology.acker.executors", 1);
+    spout.open(conf, context, collector);
     spout.nextTuple();
 
     verify(collector, times(1)).emit(any(Values.class), anyInt());
@@ -73,9 +74,11 @@ public class FileReadSpoutTest {
 
   @Test
   public void shouldEmitValueOnlyWhenAckDisabled() {
-    FileReadSpout spout = new FileReadSpout(false, reader);
+    FileReadSpout spout = new FileReadSpout(reader);
 
-    spout.open(ANY_CONF, context, collector);
+      HashMap<String, Object> conf = new HashMap<String, Object>();
+      conf.put("topology.acker.executors", 0);
+      spout.open(conf, context, collector);
     spout.nextTuple();
 
     verify(collector, times(1)).emit(any(Values.class));

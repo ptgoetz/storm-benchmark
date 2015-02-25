@@ -34,34 +34,29 @@ public class FileReadSpout extends BaseRichSpout {
   private static final long serialVersionUID = -2582705611472467172L;
 
 	public static final String DEFAULT_FILE = "/resources/A_Tale_of_Two_City.txt";
-  public static final boolean DEFAULT_ACK = false;
+//  public static final boolean DEFAULT_ACK = false;
   public static final String FIELDS = "sentence";
 
-  public final boolean ackEnabled;
   private transient FileReader reader;
   private String file;
+    private boolean ackEnabled = true;
 	private SpoutOutputCollector collector;
 
   private long count = 0;
 
 
   public FileReadSpout() {
-    this(DEFAULT_ACK, DEFAULT_FILE);
+    this(DEFAULT_FILE);
   }
 
 
-  public FileReadSpout(boolean ackEnabled) {
-    this(ackEnabled, DEFAULT_FILE);
-  }
 
-  public FileReadSpout(boolean ackEnabled, String file) {
-    this.ackEnabled = ackEnabled;
+  public FileReadSpout(String file) {
     this.file = file;
   }
 
   // used for testing
-  FileReadSpout(boolean ackEnabled, FileReader reader) {
-    this.ackEnabled = ackEnabled;
+  FileReadSpout(FileReader reader) {
     this.reader = reader;
   }
 
@@ -69,6 +64,10 @@ public class FileReadSpout extends BaseRichSpout {
 	public void open(Map conf, TopologyContext context,
 			SpoutOutputCollector collector) {
 		this.collector = collector;
+        Object ackObj = conf.get("topology.acker.executors");
+        if(ackObj != null && ackObj.equals(0)){
+            this.ackEnabled = false;
+        }
       // for tests, reader will not be null
       if(this.reader == null) {
         this.reader = new FileReader(this.file);
