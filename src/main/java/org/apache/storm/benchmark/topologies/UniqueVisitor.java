@@ -34,40 +34,40 @@ import storm.kafka.StringScheme;
 import static org.apache.storm.benchmark.lib.spout.pageview.PageView.Item;
 
 public class UniqueVisitor extends StormBenchmark {
-  public final static String SPOUT_ID = "spout";
-  public final static String SPOUT_NUM = "component.spout_num";
-  public final static String VIEW_ID = "view";
-  public final static String VIEW_NUM = "component.view_bolt_num";
-  public final static String UNIQUER_ID = "uniquer";
-  public final static String UNIQUER_NUM = "component.uniquer_bolt_num";
-  public final static String WINDOW_LENGTH = "window.length";
-  public final static String EMIT_FREQ = "emit.frequency";
+    public final static String SPOUT_ID = "spout";
+    public final static String SPOUT_NUM = "component.spout_num";
+    public final static String VIEW_ID = "view";
+    public final static String VIEW_NUM = "component.view_bolt_num";
+    public final static String UNIQUER_ID = "uniquer";
+    public final static String UNIQUER_NUM = "component.uniquer_bolt_num";
+    public final static String WINDOW_LENGTH = "window.length";
+    public final static String EMIT_FREQ = "emit.frequency";
 
-  public static final int DEFAULT_SPOUT_NUM = 4;
-  public static final int DEFAULT_PV_BOLT_NUM = 4;
-  public static final int DEFAULT_UV_BOLT_NUM = 4;
-  public static final int DEFAULT_WINDOW_LENGTH_IN_SEC = 9; //  9s
-  public static final int DEFAULT_EMIT_FREQ_IN_SEC = 3; // 3s
+    public static final int DEFAULT_SPOUT_NUM = 4;
+    public static final int DEFAULT_PV_BOLT_NUM = 4;
+    public static final int DEFAULT_UV_BOLT_NUM = 4;
+    public static final int DEFAULT_WINDOW_LENGTH_IN_SEC = 9; //  9s
+    public static final int DEFAULT_EMIT_FREQ_IN_SEC = 3; // 3s
 
-  protected IRichSpout spout;
+    protected IRichSpout spout;
 
-  @Override
-  public StormTopology getTopology(Config config) {
+    @Override
+    public StormTopology getTopology(Config config) {
 
-    final int spoutNum = BenchmarkUtils.getInt(config, SPOUT_NUM, DEFAULT_SPOUT_NUM);
-    final int pvBoltNum = BenchmarkUtils.getInt(config, VIEW_NUM, DEFAULT_PV_BOLT_NUM);
-    final int uvBoltNum = BenchmarkUtils.getInt(config, UNIQUER_NUM, DEFAULT_UV_BOLT_NUM);
-    final int winLen = BenchmarkUtils.getInt(config, WINDOW_LENGTH, DEFAULT_WINDOW_LENGTH_IN_SEC);
-    final int emitFreq = BenchmarkUtils.getInt(config, EMIT_FREQ, DEFAULT_EMIT_FREQ_IN_SEC);
-    spout = new KafkaSpout(KafkaUtils.getSpoutConfig(
-            config, new SchemeAsMultiScheme(new StringScheme())));
+        final int spoutNum = BenchmarkUtils.getInt(config, SPOUT_NUM, DEFAULT_SPOUT_NUM);
+        final int pvBoltNum = BenchmarkUtils.getInt(config, VIEW_NUM, DEFAULT_PV_BOLT_NUM);
+        final int uvBoltNum = BenchmarkUtils.getInt(config, UNIQUER_NUM, DEFAULT_UV_BOLT_NUM);
+        final int winLen = BenchmarkUtils.getInt(config, WINDOW_LENGTH, DEFAULT_WINDOW_LENGTH_IN_SEC);
+        final int emitFreq = BenchmarkUtils.getInt(config, EMIT_FREQ, DEFAULT_EMIT_FREQ_IN_SEC);
+        spout = new KafkaSpout(KafkaUtils.getSpoutConfig(
+                config, new SchemeAsMultiScheme(new StringScheme())));
 
-    TopologyBuilder builder = new TopologyBuilder();
-    builder.setSpout(SPOUT_ID, spout, spoutNum);
-    builder.setBolt(VIEW_ID, new PageViewBolt(Item.URL, Item.USER), pvBoltNum)
-            .localOrShuffleGrouping(SPOUT_ID);
-    builder.setBolt(UNIQUER_ID, new UniqueVisitorBolt(winLen, emitFreq), uvBoltNum)
-            .fieldsGrouping(VIEW_ID, new Fields(Item.URL.toString()));
-    return builder.createTopology();
-  }
+        TopologyBuilder builder = new TopologyBuilder();
+        builder.setSpout(SPOUT_ID, spout, spoutNum);
+        builder.setBolt(VIEW_ID, new PageViewBolt(Item.URL, Item.USER), pvBoltNum)
+                .localOrShuffleGrouping(SPOUT_ID);
+        builder.setBolt(UNIQUER_ID, new UniqueVisitorBolt(winLen, emitFreq), uvBoltNum)
+                .fieldsGrouping(VIEW_ID, new Fields(Item.URL.toString()));
+        return builder.createTopology();
+    }
 }

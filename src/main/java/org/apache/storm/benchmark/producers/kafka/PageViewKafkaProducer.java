@@ -24,28 +24,28 @@ import org.apache.storm.benchmark.lib.spout.pageview.PageViewGenerator;
 
 public class PageViewKafkaProducer extends KafkaProducer {
 
-  @Override
-  public StormTopology getTopology(Config config) {
-    spout = new PageViewSpout();
-    return super.getTopology(config);
-  }
-
-  static class PageViewSpout extends KafkaProducerSpout {
-
-    private static final long serialVersionUID = 1772211150101656352L;
-    private PageViewGenerator generator;
-
-    public PageViewSpout() {
-      this.generator = new PageViewGenerator();
-    }
-
-    public PageViewSpout(PageViewGenerator generator) {
-      this.generator = generator;
-    }
-
     @Override
-    public void nextTuple() {
-      nextMessage(generator.getNextClickEvent());
+    public StormTopology getTopology(Config config) {
+        spout = new PageViewSpout();
+        return super.getTopology(config);
     }
-  }
+
+    static class PageViewSpout extends KafkaProducerSpout {
+
+        private static final long serialVersionUID = 1772211150101656352L;
+        private PageViewGenerator generator;
+
+        public PageViewSpout() {
+            this.generator = new PageViewGenerator();
+        }
+
+        public PageViewSpout(PageViewGenerator generator) {
+            this.generator = generator;
+        }
+
+        @Override
+        public void nextTuple() {
+            nextMessage(generator.getNextClickEvent());
+        }
+    }
 }

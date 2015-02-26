@@ -24,30 +24,30 @@ import org.apache.storm.benchmark.util.FileReader;
 
 public class FileReadKafkaProducer extends KafkaProducer {
 
-  public static final String FILE = "/resources/A_Tale_of_Two_City.txt";
-
-  @Override
-  public StormTopology getTopology(Config config) {
-    spout = new FileReadSpout(FILE);
-    return super.getTopology(config);
-  }
-
-  static class FileReadSpout extends KafkaProducerSpout {
-
-    private static final long serialVersionUID = -7503987913879480348L;
-    private final FileReader reader;
-
-    public FileReadSpout(String file) {
-      this.reader = new FileReader(file);
-    }
-
-    public FileReadSpout(FileReader reader) {
-      this.reader = reader;
-    }
+    public static final String FILE = "/resources/A_Tale_of_Two_City.txt";
 
     @Override
-    public void nextTuple() {
-      nextMessage(reader.nextLine());
+    public StormTopology getTopology(Config config) {
+        spout = new FileReadSpout(FILE);
+        return super.getTopology(config);
     }
-  }
+
+    static class FileReadSpout extends KafkaProducerSpout {
+
+        private static final long serialVersionUID = -7503987913879480348L;
+        private final FileReader reader;
+
+        public FileReadSpout(String file) {
+            this.reader = new FileReader(file);
+        }
+
+        public FileReadSpout(FileReader reader) {
+            this.reader = reader;
+        }
+
+        @Override
+        public void nextTuple() {
+            nextMessage(reader.nextLine());
+        }
+    }
 }

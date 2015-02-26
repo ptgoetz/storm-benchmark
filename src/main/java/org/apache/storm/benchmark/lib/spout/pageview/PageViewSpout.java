@@ -29,40 +29,39 @@ import java.util.Map;
 
 public class PageViewSpout extends BaseRichSpout {
 
-  public static final String FIELDS = "page_view";
+    public static final String FIELDS = "page_view";
+    private final PageViewGenerator generator;
+    private final boolean ackEnabled;
+    private SpoutOutputCollector collector;
+    private long count = 0;
 
-  private SpoutOutputCollector collector;
-  private final PageViewGenerator generator;
-  private final boolean ackEnabled;
-  private long count = 0;
-
-  public PageViewSpout(boolean ackEnabled) {
-    this.ackEnabled = ackEnabled;
-    this.generator = new PageViewGenerator();
-  }
-
-  public PageViewSpout(boolean ackEnabled, PageViewGenerator generator) {
-    this.ackEnabled = ackEnabled;
-    this.generator = generator;
-  }
-
-  @Override
-  public void declareOutputFields(OutputFieldsDeclarer declarer) {
-    declarer.declare(new Fields(FIELDS));
-  }
-
-  @Override
-  public void open(Map conf, TopologyContext context, SpoutOutputCollector collector) {
-    this.collector = collector;
-  }
-
-  @Override
-  public void nextTuple() {
-    if (ackEnabled) {
-      collector.emit(new Values(generator.getNextClickEvent()), count);
-      count++;
-    } else {
-      collector.emit(new Values(generator.getNextClickEvent()));
+    public PageViewSpout(boolean ackEnabled) {
+        this.ackEnabled = ackEnabled;
+        this.generator = new PageViewGenerator();
     }
-  }
+
+    public PageViewSpout(boolean ackEnabled, PageViewGenerator generator) {
+        this.ackEnabled = ackEnabled;
+        this.generator = generator;
+    }
+
+    @Override
+    public void declareOutputFields(OutputFieldsDeclarer declarer) {
+        declarer.declare(new Fields(FIELDS));
+    }
+
+    @Override
+    public void open(Map conf, TopologyContext context, SpoutOutputCollector collector) {
+        this.collector = collector;
+    }
+
+    @Override
+    public void nextTuple() {
+        if (ackEnabled) {
+            collector.emit(new Values(generator.getNextClickEvent()), count);
+            count++;
+        } else {
+            collector.emit(new Values(generator.getNextClickEvent()));
+        }
+    }
 }

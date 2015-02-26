@@ -21,23 +21,23 @@ package org.apache.storm.benchmark.topologies;
 import backtype.storm.Config;
 import backtype.storm.generated.StormTopology;
 import backtype.storm.utils.Utils;
-import org.testng.annotations.Test;
 import org.apache.storm.benchmark.util.TestUtils;
+import org.testng.annotations.Test;
 
 import static org.fest.assertions.api.Assertions.assertThat;
 
 public class RollingSortTest {
-  @Test
-  public void componentParallelismCouldBeSetThroughConfig() {
-    StormBenchmark benchmark = new RollingSort();
-    Config config = new Config();
-    config.put(RollingSort.SPOUT_NUM, 4);
-    config.put(RollingSort.SORT_BOLT_NUM, 5);
+    @Test
+    public void componentParallelismCouldBeSetThroughConfig() {
+        StormBenchmark benchmark = new RollingSort();
+        Config config = new Config();
+        config.put(RollingSort.SPOUT_NUM, 4);
+        config.put(RollingSort.SORT_BOLT_NUM, 5);
 
-    StormTopology topology = benchmark.getTopology(config);
-    assertThat(topology).isNotNull();
-    TestUtils.verifyParallelism(Utils.getComponentCommon(topology, RollingSort.SPOUT_ID), 4);
-    TestUtils.verifyParallelism(Utils.getComponentCommon(topology, RollingSort.SORT_BOLT_ID), 5);
-  }
+        StormTopology topology = benchmark.getTopology(config);
+        assertThat(topology).isNotNull();
+        TestUtils.verifyParallelism(Utils.getComponentCommon(topology, RollingSort.SPOUT_ID), 4);
+        TestUtils.verifyParallelism(Utils.getComponentCommon(topology, RollingSort.SORT_BOLT_ID), 5);
+    }
 
 }

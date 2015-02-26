@@ -21,13 +21,12 @@ package org.apache.storm.benchmark.topologies;
 import backtype.storm.Config;
 import backtype.storm.generated.StormTopology;
 import org.apache.storm.benchmark.lib.spout.FileReadSpout;
-import org.apache.storm.benchmark.util.BenchmarkUtils;
 
 public class FileReadWordCount extends WordCount {
 
-  @Override
-  public StormTopology getTopology(Config config) {
-    spout = new FileReadSpout();
-    return super.getTopology(config);
-  }
+    @Override
+    public StormTopology getTopology(Config config) {
+        spout = new FileReadSpout();
+        return super.getTopology(config);
+    }
 }

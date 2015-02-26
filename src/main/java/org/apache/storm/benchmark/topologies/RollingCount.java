@@ -23,49 +23,46 @@ import backtype.storm.generated.StormTopology;
 import backtype.storm.topology.IRichSpout;
 import backtype.storm.topology.TopologyBuilder;
 import backtype.storm.tuple.Fields;
-import org.apache.storm.benchmark.lib.bolt.RollingCountBolt;
 import org.apache.storm.benchmark.lib.bolt.RollingBolt;
+import org.apache.storm.benchmark.lib.bolt.RollingCountBolt;
 import org.apache.storm.benchmark.lib.spout.FileReadSpout;
 import org.apache.storm.benchmark.util.BenchmarkUtils;
 
 public class RollingCount extends StormBenchmark {
 
-  private static final String WINDOW_LENGTH = "window.length";
-  private static final String EMIT_FREQ = "emit.frequency";
+    public static final String SPOUT_ID = "spout";
+    public static final String SPOUT_NUM = "component.spout_num";
+    public static final String SPLIT_ID = "split";
+    public static final String SPLIT_NUM = "component.split_bolt_num";
+    public static final String COUNTER_ID = "rolling_count";
+    public static final String COUNTER_NUM = "component.rolling_count_bolt_num";
+    public static final int DEFAULT_SPOUT_NUM = 4;
+    public static final int DEFAULT_SP_BOLT_NUM = 8;
+    public static final int DEFAULT_RC_BOLT_NUM = 8;
+    private static final String WINDOW_LENGTH = "window.length";
+    private static final String EMIT_FREQ = "emit.frequency";
+    private IRichSpout spout;
 
-  public static final String SPOUT_ID = "spout";
-  public static final String SPOUT_NUM = "component.spout_num";
-  public static final String SPLIT_ID = "split";
-  public static final String SPLIT_NUM = "component.split_bolt_num";
-  public static final String COUNTER_ID = "rolling_count";
-  public static final String COUNTER_NUM = "component.rolling_count_bolt_num";
+    @Override
+    public StormTopology getTopology(Config config) {
 
-  public static final int DEFAULT_SPOUT_NUM = 4;
-  public static final int DEFAULT_SP_BOLT_NUM = 8;
-  public static final int DEFAULT_RC_BOLT_NUM = 8;
+        final int spoutNum = BenchmarkUtils.getInt(config, SPOUT_NUM, DEFAULT_SPOUT_NUM);
+        final int spBoltNum = BenchmarkUtils.getInt(config, SPLIT_NUM, DEFAULT_SP_BOLT_NUM);
+        final int rcBoltNum = BenchmarkUtils.getInt(config, COUNTER_NUM, DEFAULT_RC_BOLT_NUM);
+        final int windowLength = BenchmarkUtils.getInt(config, WINDOW_LENGTH,
+                RollingBolt.DEFAULT_SLIDING_WINDOW_IN_SECONDS);
+        final int emitFreq = BenchmarkUtils.getInt(config, EMIT_FREQ,
+                RollingBolt.DEFAULT_EMIT_FREQUENCY_IN_SECONDS);
 
-  private IRichSpout spout;
+        spout = new FileReadSpout();
 
-  @Override
-  public StormTopology getTopology(Config config) {
+        TopologyBuilder builder = new TopologyBuilder();
 
-    final int spoutNum = BenchmarkUtils.getInt(config, SPOUT_NUM, DEFAULT_SPOUT_NUM);
-    final int spBoltNum = BenchmarkUtils.getInt(config, SPLIT_NUM, DEFAULT_SP_BOLT_NUM);
-    final int rcBoltNum = BenchmarkUtils.getInt(config, COUNTER_NUM, DEFAULT_RC_BOLT_NUM);
-    final int windowLength = BenchmarkUtils.getInt(config, WINDOW_LENGTH,
-            RollingBolt.DEFAULT_SLIDING_WINDOW_IN_SECONDS);
-    final int emitFreq = BenchmarkUtils.getInt(config, EMIT_FREQ,
-            RollingBolt.DEFAULT_EMIT_FREQUENCY_IN_SECONDS);
-
-    spout = new FileReadSpout();
-
-    TopologyBuilder builder = new TopologyBuilder();
-
-    builder.setSpout(SPOUT_ID, spout, spoutNum);
-    builder.setBolt(SPLIT_ID, new WordCount.SplitSentence(), spBoltNum)
-            .localOrShuffleGrouping(SPOUT_ID);
-    builder.setBolt(COUNTER_ID, new RollingCountBolt(windowLength, emitFreq), rcBoltNum)
-            .fieldsGrouping(SPLIT_ID, new Fields(WordCount.SplitSentence.FIELDS));
-    return builder.createTopology();
-  }
+        builder.setSpout(SPOUT_ID, spout, spoutNum);
+        builder.setBolt(SPLIT_ID, new WordCount.SplitSentence(), spBoltNum)
+                .localOrShuffleGrouping(SPOUT_ID);
+        builder.setBolt(COUNTER_ID, new RollingCountBolt(windowLength, emitFreq), rcBoltNum)
+                .fieldsGrouping(SPLIT_ID, new Fields(WordCount.SplitSentence.FIELDS));
+        return builder.createTopology();
+    }
 }

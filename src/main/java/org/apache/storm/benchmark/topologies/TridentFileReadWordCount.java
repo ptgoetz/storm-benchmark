@@ -15,12 +15,12 @@ public class TridentFileReadWordCount extends StormBenchmark {
 
     public static final String SPOUT_ID = "spout";
     public static final String SPOUT_NUM = "component.spout_num";
-//    public static final String SPLIT_NUM = "component.split_bolt_num";
+    //    public static final String SPLIT_NUM = "component.split_bolt_num";
     public static final String COUNT_NUM = "component.count_bolt_num";
     public static final String BATCH_SIZE = "trident.spout.batch.size";
 
     public static final int DEFAULT_SPOUT_NUM = 8;
-//    public static final int DEFAULT_SPLIT_BOLT_NUM = 4;
+    //    public static final int DEFAULT_SPLIT_BOLT_NUM = 4;
     public static final int DEFAULT_COUNT_BOLT_NUM = 4;
     public static final int DEFAULT_BATCH_SIZE = 1000;
 

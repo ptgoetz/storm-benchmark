@@ -18,13 +18,14 @@
 package org.apache.storm.benchmark.tools;
 
 import org.apache.commons.cli.*;
-import static org.apache.storm.benchmark.BenchmarkConstants.*;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Map;
+
+import static org.apache.storm.benchmark.BenchmarkConstants.*;
 
 
 public class BenchmarkRunner {
@@ -58,7 +59,7 @@ public class BenchmarkRunner {
         CommandLineParser parser = new BasicParser();
         CommandLine cmd = parser.parse(options, args);
 
-        if(cmd.getArgs().length != 1) {
+        if (cmd.getArgs().length != 1) {
             usage(options);
             System.exit(1);
         }

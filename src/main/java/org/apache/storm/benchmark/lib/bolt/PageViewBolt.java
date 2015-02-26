@@ -25,6 +25,7 @@ import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Tuple;
 import backtype.storm.tuple.Values;
 import org.apache.storm.benchmark.lib.spout.pageview.PageView;
+
 import static org.apache.storm.benchmark.lib.spout.pageview.PageView.Item;
 
 /**
@@ -34,29 +35,28 @@ import static org.apache.storm.benchmark.lib.spout.pageview.PageView.Item;
  * could be one of the above, the pageview itself or a count ONE.
  * This is flexible enough to feed downstream bolts for such use cases as
  * PageViewCount(URL, ONE) and UniqueVisitorCount(URL, USER)
- *
  */
 
 public class PageViewBolt extends BaseBasicBolt {
 
-  private static final long serialVersionUID = -523726932372993856L;
-  public final Item field1;
-  public final Item field2;
+    private static final long serialVersionUID = -523726932372993856L;
+    public final Item field1;
+    public final Item field2;
 
-  public PageViewBolt(Item field1, Item field2) {
-    this.field1 = field1;
-    this.field2 = field2;
-  }
+    public PageViewBolt(Item field1, Item field2) {
+        this.field1 = field1;
+        this.field2 = field2;
+    }
 
-  @Override
-  public void execute(Tuple input, BasicOutputCollector collector) {
-    PageView view = PageView.fromString(input.getString(0));
-    collector.emit(new Values(view.getValue(field1), view.getValue(field2)));
-  }
+    @Override
+    public void execute(Tuple input, BasicOutputCollector collector) {
+        PageView view = PageView.fromString(input.getString(0));
+        collector.emit(new Values(view.getValue(field1), view.getValue(field2)));
+    }
 
-  @Override
-  public void declareOutputFields(OutputFieldsDeclarer declarer) {
-    declarer.declare(new Fields(field1.toString(), field2.toString()));
-  }
+    @Override
+    public void declareOutputFields(OutputFieldsDeclarer declarer) {
+        declarer.declare(new Fields(field1.toString(), field2.toString()));
+    }
 
 }

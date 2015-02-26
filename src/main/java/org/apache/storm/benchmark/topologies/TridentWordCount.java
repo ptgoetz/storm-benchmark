@@ -35,46 +35,44 @@ import storm.trident.testing.MemoryMapState;
 
 public class TridentWordCount extends StormBenchmark {
 
-  public static final String SPOUT_ID = "spout";
-  public static final String SPOUT_NUM = "component.spout_num";
-  public static final String SPLIT_ID = "split";
-  public static final String SPLIT_NUM = "component.split_bolt_num";
-  public static final String COUNT_ID = "count";
-  public static final String COUNT_NUM = "component.count_bolt_num";
+    public static final String SPOUT_ID = "spout";
+    public static final String SPOUT_NUM = "component.spout_num";
+    public static final String SPLIT_ID = "split";
+    public static final String SPLIT_NUM = "component.split_bolt_num";
+    public static final String COUNT_ID = "count";
+    public static final String COUNT_NUM = "component.count_bolt_num";
 
-  public static final int DEFAULT_SPOUT_NUM = 8;
-  public static final int DEFAULT_SPLIT_BOLT_NUM = 4;
-  public static final int DEFAULT_COUNT_BOLT_NUM = 4;
+    public static final int DEFAULT_SPOUT_NUM = 8;
+    public static final int DEFAULT_SPLIT_BOLT_NUM = 4;
+    public static final int DEFAULT_COUNT_BOLT_NUM = 4;
 
-  private IPartitionedTridentSpout spout;
+    private IPartitionedTridentSpout spout;
 
-  @Override
-  public StormTopology getTopology(Config config) {
-    final int spoutNum = BenchmarkUtils.getInt(config, SPOUT_NUM, DEFAULT_SPOUT_NUM);
-    final int splitNum = BenchmarkUtils.getInt(config, SPLIT_NUM, DEFAULT_SPLIT_BOLT_NUM);
-    final int countNum = BenchmarkUtils.getInt(config, COUNT_NUM, DEFAULT_COUNT_BOLT_NUM);
+    @Override
+    public StormTopology getTopology(Config config) {
+        final int spoutNum = BenchmarkUtils.getInt(config, SPOUT_NUM, DEFAULT_SPOUT_NUM);
+        final int splitNum = BenchmarkUtils.getInt(config, SPLIT_NUM, DEFAULT_SPLIT_BOLT_NUM);
+        final int countNum = BenchmarkUtils.getInt(config, COUNT_NUM, DEFAULT_COUNT_BOLT_NUM);
 
-    spout  = new TransactionalTridentKafkaSpout(
-            KafkaUtils.getTridentKafkaConfig(config, new SchemeAsMultiScheme(new StringScheme())));
+        spout = new TransactionalTridentKafkaSpout(
+                KafkaUtils.getTridentKafkaConfig(config, new SchemeAsMultiScheme(new StringScheme())));
 
-    TridentTopology trident = new TridentTopology();
+        TridentTopology trident = new TridentTopology();
 
-    trident.newStream("wordcount", spout).name("sentence").parallelismHint(spoutNum).shuffle()
-            .each(new Fields(StringScheme.STRING_SCHEME_KEY), new WordSplit(), new Fields("word"))
-            .parallelismHint(splitNum)
-            .groupBy(new Fields("word"))
-            .persistentAggregate(new MemoryMapState.Factory(), new Count(), new Fields("count"))
-            .parallelismHint(countNum);
+        trident.newStream("wordcount", spout).name("sentence").parallelismHint(spoutNum).shuffle()
+                .each(new Fields(StringScheme.STRING_SCHEME_KEY), new WordSplit(), new Fields("word"))
+                .parallelismHint(splitNum)
+                .groupBy(new Fields("word"))
+                .persistentAggregate(new MemoryMapState.Factory(), new Count(), new Fields("count"))
+                .parallelismHint(countNum);
 /*    trident.newStream("wordcount", spout)
       .each(new Fields(StringScheme.STRING_SCHEME_KEY), new WordSplit(), new Fields("word"))
       .groupBy(new Fields("word"))
       .persistentAggregate(new MemoryMapState.Factory(), new Count(), new Fields("count"));*/
 
 
-    return trident.build();
-  }
-
-
+        return trident.build();
+    }
 
 
 }

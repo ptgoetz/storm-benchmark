@@ -20,13 +20,12 @@ package org.apache.storm.benchmark.tools;
 
 import backtype.storm.Config;
 import backtype.storm.StormSubmitter;
-import backtype.storm.generated.InvalidTopologyException;
 import backtype.storm.generated.StormTopology;
 import backtype.storm.utils.Utils;
 import org.apache.log4j.Logger;
 import org.apache.storm.benchmark.api.*;
-import org.yaml.snakeyaml.Yaml;
 import org.apache.storm.benchmark.metrics.IMetricsCollector;
+import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -38,41 +37,41 @@ import java.util.Map;
  * It instantiates an IBenchmark from passed-in name and then run it
  */
 public class Runner {
-  private static final Logger LOG = Logger.getLogger(Runner.class);
+    private static final Logger LOG = Logger.getLogger(Runner.class);
 
-  private static Config config = new Config();
-  private static StormTopology topology;
+    private static Config config = new Config();
+    private static StormTopology topology;
 
-  public static void main(String[] args) throws Exception {
-    if (null == args || args.length < 1) {
-      throw new IllegalArgumentException("no benchmark is set");
+    public static void main(String[] args) throws Exception {
+        if (null == args || args.length < 1) {
+            throw new IllegalArgumentException("no benchmark is set");
+        }
+
+        run(args[0]);
     }
 
-    run(args[0]);
-  }
-
-  public static void run(String name)
-          throws Exception {
-      initConfig();
-      IApplication app = getApplicationFromName(name);
-    if (app instanceof Benchmark) {
-      LOG.info("running benchmark " + name);
-      runBenchmark((IBenchmark) app);
-    } else if (app instanceof Producer) {
-      LOG.info("running producer " + name);
-      runProducer((IProducer) app);
-    } else {
-      throw new RuntimeException(name + " is neither benchmark nor producer");
+    public static void run(String name)
+            throws Exception {
+        initConfig();
+        IApplication app = getApplicationFromName(name);
+        if (app instanceof Benchmark) {
+            LOG.info("running benchmark " + name);
+            runBenchmark((IBenchmark) app);
+        } else if (app instanceof Producer) {
+            LOG.info("running producer " + name);
+            runProducer((IProducer) app);
+        } else {
+            throw new RuntimeException(name + " is neither benchmark nor producer");
+        }
     }
-  }
 
-    private static void initConfig(){
+    private static void initConfig() {
         Yaml yaml = new Yaml();
         File confFile = new File(System.getProperty("user.home"), ".storm/storm.yaml");
-        if(confFile.exists()) {
+        if (confFile.exists()) {
 
             try {
-                Map<String, Object> localConf = (Map<String, Object>)yaml.load(new FileInputStream(confFile));
+                Map<String, Object> localConf = (Map<String, Object>) yaml.load(new FileInputStream(confFile));
                 config.putAll(localConf);
             } catch (FileNotFoundException e) {
                 LOG.warn("Local storm config not found.", e);
@@ -92,23 +91,22 @@ public class Runner {
 
 
     public static void runBenchmark(IBenchmark benchmark)
-          throws Exception {
-    runApplication(benchmark);
-    IMetricsCollector collector = benchmark.getMetricsCollector(config, topology);
-    collector.run();
-  }
+            throws Exception {
+        runApplication(benchmark);
+        IMetricsCollector collector = benchmark.getMetricsCollector(config, topology);
+        collector.run();
+    }
 
-  public static void runProducer(IProducer producer)
-          throws Exception {
-    runApplication(producer);
-  }
+    public static void runProducer(IProducer producer)
+            throws Exception {
+        runApplication(producer);
+    }
 
 
-
-  private static void runApplication(IApplication app)
-          throws Exception {
-    String name = (String) config.get(Config.TOPOLOGY_NAME);
-    topology = app.getTopology(config);
-    StormSubmitter.submitTopology(name, config, topology);
-  }
+    private static void runApplication(IApplication app)
+            throws Exception {
+        String name = (String) config.get(Config.TOPOLOGY_NAME);
+        topology = app.getTopology(config);
+        StormSubmitter.submitTopology(name, config, topology);
+    }
 }

@@ -23,9 +23,9 @@ import backtype.storm.task.TopologyContext;
 import backtype.storm.topology.OutputFieldsDeclarer;
 import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Values;
+import org.apache.storm.benchmark.util.FileReader;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-import org.apache.storm.benchmark.util.FileReader;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -35,52 +35,52 @@ import static org.mockito.Matchers.anyInt;
 import static org.mockito.Mockito.*;
 
 public class FileReadSpoutTest {
-  private static final int messageSize = 100;
-  private static final Map ANY_CONF = new HashMap();
-  private static final String NEXT_LINE = "next line";
-  private OutputFieldsDeclarer declarer;
-  private TopologyContext context;
-  private SpoutOutputCollector collector;
-  private FileReader reader;
+    private static final int messageSize = 100;
+    private static final Map ANY_CONF = new HashMap();
+    private static final String NEXT_LINE = "next line";
+    private OutputFieldsDeclarer declarer;
+    private TopologyContext context;
+    private SpoutOutputCollector collector;
+    private FileReader reader;
 
-  @BeforeMethod
-  public void setUp() {
-    declarer = mock(OutputFieldsDeclarer.class);
-    collector = mock(SpoutOutputCollector.class);
-    context = mock(TopologyContext.class);
-    reader = mock(FileReader.class);
-    when(reader.nextLine()).thenReturn(NEXT_LINE);
-  }
+    @BeforeMethod
+    public void setUp() {
+        declarer = mock(OutputFieldsDeclarer.class);
+        collector = mock(SpoutOutputCollector.class);
+        context = mock(TopologyContext.class);
+        reader = mock(FileReader.class);
+        when(reader.nextLine()).thenReturn(NEXT_LINE);
+    }
 
-  @Test
-  public void shouldDeclareOutputFields() {
-    FileReadSpout spout = new FileReadSpout(reader);
+    @Test
+    public void shouldDeclareOutputFields() {
+        FileReadSpout spout = new FileReadSpout(reader);
 
-    spout.declareOutputFields(declarer);
+        spout.declareOutputFields(declarer);
 
-    verify(declarer, times(1)).declare(any(Fields.class));
-  }
+        verify(declarer, times(1)).declare(any(Fields.class));
+    }
 
-  @Test
-  public void shouldEmitValueAndIdWhenAckEnabled() {
-    FileReadSpout spout = new FileReadSpout(reader);
-    HashMap<String, Object> conf = new HashMap<String, Object>();
-      conf.put("topology.acker.executors", 1);
-    spout.open(conf, context, collector);
-    spout.nextTuple();
+    @Test
+    public void shouldEmitValueAndIdWhenAckEnabled() {
+        FileReadSpout spout = new FileReadSpout(reader);
+        HashMap<String, Object> conf = new HashMap<String, Object>();
+        conf.put("topology.acker.executors", 1);
+        spout.open(conf, context, collector);
+        spout.nextTuple();
 
-    verify(collector, times(1)).emit(any(Values.class), anyInt());
-  }
+        verify(collector, times(1)).emit(any(Values.class), anyInt());
+    }
 
-  @Test
-  public void shouldEmitValueOnlyWhenAckDisabled() {
-    FileReadSpout spout = new FileReadSpout(reader);
+    @Test
+    public void shouldEmitValueOnlyWhenAckDisabled() {
+        FileReadSpout spout = new FileReadSpout(reader);
 
-      HashMap<String, Object> conf = new HashMap<String, Object>();
-      conf.put("topology.acker.executors", 0);
-      spout.open(conf, context, collector);
-    spout.nextTuple();
+        HashMap<String, Object> conf = new HashMap<String, Object>();
+        conf.put("topology.acker.executors", 0);
+        spout.open(conf, context, collector);
+        spout.nextTuple();
 
-    verify(collector, times(1)).emit(any(Values.class));
-  }
+        verify(collector, times(1)).emit(any(Values.class));
+    }
 }

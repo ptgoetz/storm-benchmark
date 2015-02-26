@@ -32,71 +32,70 @@ import java.util.Map;
 
 public class TridentFileReadSpout implements IBatchSpout {
 
-  private static final long serialVersionUID = -3538746749629409899L;
-  private static final String DEFAULT_FILE = "/resources/A_Tale_of_Two_City.txt";
-  public static final String FIELDS = "sentence";
+    public static final String FIELDS = "sentence";
+    private static final long serialVersionUID = -3538746749629409899L;
+    private static final String DEFAULT_FILE = "/resources/A_Tale_of_Two_City.txt";
+    private final int maxBatchSize;
+    private final HashMap<Long, List<String>> batches = new HashMap<Long, List<String>>();
+    private transient FileReader reader;
+    private String file;
 
-  private final int maxBatchSize;
-  private transient FileReader reader;
-  private String file;
-  private final HashMap<Long, List<String>> batches = new HashMap<Long, List<String>>();
-
-  public TridentFileReadSpout(int maxBatchSize) {
-    this(maxBatchSize, DEFAULT_FILE);
-  }
-
-  public TridentFileReadSpout(int maxBatchSize, String file) {
-    this.maxBatchSize = maxBatchSize;
-    this.file = file;
-  }
-
-  TridentFileReadSpout(int maxBatchSize, FileReader reader) {
-    this.maxBatchSize = maxBatchSize;
-    this.reader = reader;
-  }
-
-  @Override
-  public void open(Map conf, TopologyContext context) {
-    this.reader = new FileReader(this.file);
-  }
-
-  @Override
-  public void emitBatch(long batchId, TridentCollector collector) {
-    List<String> batch = batches.get(batchId);
-    if (batch == null) {
-      batch = new ArrayList<String>();
-      for (int i = 0;  i < maxBatchSize; i++) {
-        batch.add(reader.nextLine());
-      }
-      batches.put(batchId, batch);
+    public TridentFileReadSpout(int maxBatchSize) {
+        this(maxBatchSize, DEFAULT_FILE);
     }
-    for(String line : batch){
-      collector.emit(new Values(line));
+
+    public TridentFileReadSpout(int maxBatchSize, String file) {
+        this.maxBatchSize = maxBatchSize;
+        this.file = file;
     }
-  }
 
-  @Override
-  public void ack(long batchId) {
-    batches.remove(batchId);
-  }
+    TridentFileReadSpout(int maxBatchSize, FileReader reader) {
+        this.maxBatchSize = maxBatchSize;
+        this.reader = reader;
+    }
 
-  @Override
-  public void close() {
-  }
+    @Override
+    public void open(Map conf, TopologyContext context) {
+        this.reader = new FileReader(this.file);
+    }
 
-  @Override
-  public Map getComponentConfiguration() {
-    return null;
-  }
+    @Override
+    public void emitBatch(long batchId, TridentCollector collector) {
+        List<String> batch = batches.get(batchId);
+        if (batch == null) {
+            batch = new ArrayList<String>();
+            for (int i = 0; i < maxBatchSize; i++) {
+                batch.add(reader.nextLine());
+            }
+            batches.put(batchId, batch);
+        }
+        for (String line : batch) {
+            collector.emit(new Values(line));
+        }
+    }
 
-  @Override
-  public Fields getOutputFields() {
-    return new Fields(FIELDS);
-  }
+    @Override
+    public void ack(long batchId) {
+        batches.remove(batchId);
+    }
 
-  Map<Long, List<String>> getBatches() {
-    return batches;
-  }
+    @Override
+    public void close() {
+    }
+
+    @Override
+    public Map getComponentConfiguration() {
+        return null;
+    }
+
+    @Override
+    public Fields getOutputFields() {
+        return new Fields(FIELDS);
+    }
+
+    Map<Long, List<String>> getBatches() {
+        return batches;
+    }
 
 
 }

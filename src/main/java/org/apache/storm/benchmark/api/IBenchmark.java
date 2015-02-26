@@ -29,5 +29,5 @@ import org.apache.storm.benchmark.metrics.IMetricsCollector;
  * metrics like throughout or latency
  */
 public interface IBenchmark extends IApplication {
-  public IMetricsCollector getMetricsCollector(Config config, StormTopology topology);
+    public IMetricsCollector getMetricsCollector(Config config, StormTopology topology);
 }

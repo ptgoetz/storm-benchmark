@@ -28,35 +28,35 @@ import org.testng.annotations.Test;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.apache.storm.benchmark.producers.kafka.PageViewKafkaProducer.PageViewSpout;
 import static org.fest.assertions.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
-import static org.apache.storm.benchmark.producers.kafka.PageViewKafkaProducer.PageViewSpout;
 
 public class PageViewKafkaProducerTest {
-  private static final Map ANY_CONF = new HashMap();
-  private static final String NEXT_CLICK_EVENT = "next click event";
+    private static final Map ANY_CONF = new HashMap();
+    private static final String NEXT_CLICK_EVENT = "next click event";
 
-  @Test
-  public void spoutShouldBeKafkaPageViewSpout() {
-    KafkaProducer producer = new PageViewKafkaProducer();
-    producer.getTopology(new Config());
-    assertThat(producer.getSpout()).isInstanceOf(PageViewSpout.class);
-  }
+    @Test
+    public void spoutShouldBeKafkaPageViewSpout() {
+        KafkaProducer producer = new PageViewKafkaProducer();
+        producer.getTopology(new Config());
+        assertThat(producer.getSpout()).isInstanceOf(PageViewSpout.class);
+    }
 
 
-  @Test
-  public void nextTupleShouldEmitNextClickEvent() throws Exception {
-    PageViewGenerator generator = mock(PageViewGenerator.class);
-    PageViewSpout spout = new PageViewSpout(generator);
-    TopologyContext context = mock(TopologyContext.class);
-    SpoutOutputCollector collector = mock(SpoutOutputCollector.class);
+    @Test
+    public void nextTupleShouldEmitNextClickEvent() throws Exception {
+        PageViewGenerator generator = mock(PageViewGenerator.class);
+        PageViewSpout spout = new PageViewSpout(generator);
+        TopologyContext context = mock(TopologyContext.class);
+        SpoutOutputCollector collector = mock(SpoutOutputCollector.class);
 
-    when(generator.getNextClickEvent()).thenReturn(NEXT_CLICK_EVENT);
+        when(generator.getNextClickEvent()).thenReturn(NEXT_CLICK_EVENT);
 
-    spout.open(ANY_CONF, context, collector);
-    spout.nextTuple();
+        spout.open(ANY_CONF, context, collector);
+        spout.nextTuple();
 
-    verify(collector, times(1)).emit(any(Values.class));
-  }
+        verify(collector, times(1)).emit(any(Values.class));
+    }
 }

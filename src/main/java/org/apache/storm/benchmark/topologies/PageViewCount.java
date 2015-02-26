@@ -33,35 +33,35 @@ import storm.kafka.StringScheme;
 import static org.apache.storm.benchmark.lib.spout.pageview.PageView.Item;
 
 public class PageViewCount extends StormBenchmark {
-  public static final String SPOUT_ID = "spout";
-  public static final String SPOUT_NUM = "component.spout_num";
-  public static final String VIEW_ID = "view";
-  public static final String VIEW_NUM = "component.view_bolt_num";
-  public static final String COUNT_ID = "count";
-  public static final String COUNT_NUM = "component.count_bolt_num";
+    public static final String SPOUT_ID = "spout";
+    public static final String SPOUT_NUM = "component.spout_num";
+    public static final String VIEW_ID = "view";
+    public static final String VIEW_NUM = "component.view_bolt_num";
+    public static final String COUNT_ID = "count";
+    public static final String COUNT_NUM = "component.count_bolt_num";
 
-  public static final int DEFAULT_SPOUT_NUM = 4;
-  public static final int DEFAULT_VIEW_BOLT_NUM = 4;
-  public static final int DEFAULT_COUNT_BOLT_NUM = 4;
+    public static final int DEFAULT_SPOUT_NUM = 4;
+    public static final int DEFAULT_VIEW_BOLT_NUM = 4;
+    public static final int DEFAULT_COUNT_BOLT_NUM = 4;
 
-  private IRichSpout spout;
+    private IRichSpout spout;
 
-  @Override
-  public StormTopology getTopology(Config config) {
+    @Override
+    public StormTopology getTopology(Config config) {
 
-    final int spoutNum = BenchmarkUtils.getInt(config, SPOUT_NUM, DEFAULT_SPOUT_NUM);
-    final int viewBoltNum = BenchmarkUtils.getInt(config, VIEW_NUM, DEFAULT_VIEW_BOLT_NUM);
-    final int cntBoltNum = BenchmarkUtils.getInt(config, COUNT_NUM, DEFAULT_COUNT_BOLT_NUM);
+        final int spoutNum = BenchmarkUtils.getInt(config, SPOUT_NUM, DEFAULT_SPOUT_NUM);
+        final int viewBoltNum = BenchmarkUtils.getInt(config, VIEW_NUM, DEFAULT_VIEW_BOLT_NUM);
+        final int cntBoltNum = BenchmarkUtils.getInt(config, COUNT_NUM, DEFAULT_COUNT_BOLT_NUM);
 
-    spout = new KafkaSpout(KafkaUtils.getSpoutConfig(
-            config, new SchemeAsMultiScheme(new StringScheme())));
+        spout = new KafkaSpout(KafkaUtils.getSpoutConfig(
+                config, new SchemeAsMultiScheme(new StringScheme())));
 
-    TopologyBuilder builder = new TopologyBuilder();
-    builder.setSpout(SPOUT_ID, spout, spoutNum);
-    builder.setBolt(VIEW_ID, new PageViewBolt(Item.URL, Item.ONE), viewBoltNum)
-           .localOrShuffleGrouping(SPOUT_ID);
-    builder.setBolt(COUNT_ID, new WordCount.Count(), cntBoltNum)
-            .fieldsGrouping(VIEW_ID, new Fields(Item.URL.toString()));
-    return builder.createTopology();
-  }
+        TopologyBuilder builder = new TopologyBuilder();
+        builder.setSpout(SPOUT_ID, spout, spoutNum);
+        builder.setBolt(VIEW_ID, new PageViewBolt(Item.URL, Item.ONE), viewBoltNum)
+                .localOrShuffleGrouping(SPOUT_ID);
+        builder.setBolt(COUNT_ID, new WordCount.Count(), cntBoltNum)
+                .fieldsGrouping(VIEW_ID, new Fields(Item.URL.toString()));
+        return builder.createTopology();
+    }
 }

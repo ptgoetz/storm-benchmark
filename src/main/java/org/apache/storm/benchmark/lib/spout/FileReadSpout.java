@@ -30,62 +30,59 @@ import org.apache.storm.benchmark.util.FileReader;
 import java.util.Map;
 
 public class FileReadSpout extends BaseRichSpout {
-  private static final Logger LOG = Logger.getLogger(FileReadSpout.class);
-  private static final long serialVersionUID = -2582705611472467172L;
-
-	public static final String DEFAULT_FILE = "/resources/A_Tale_of_Two_City.txt";
-//  public static final boolean DEFAULT_ACK = false;
-  public static final String FIELDS = "sentence";
-
-  private transient FileReader reader;
-  private String file;
+    public static final String DEFAULT_FILE = "/resources/A_Tale_of_Two_City.txt";
+    //  public static final boolean DEFAULT_ACK = false;
+    public static final String FIELDS = "sentence";
+    private static final Logger LOG = Logger.getLogger(FileReadSpout.class);
+    private static final long serialVersionUID = -2582705611472467172L;
+    private transient FileReader reader;
+    private String file;
     private boolean ackEnabled = true;
-	private SpoutOutputCollector collector;
+    private SpoutOutputCollector collector;
 
-  private long count = 0;
-
-
-  public FileReadSpout() {
-    this(DEFAULT_FILE);
-  }
+    private long count = 0;
 
 
+    public FileReadSpout() {
+        this(DEFAULT_FILE);
+    }
 
-  public FileReadSpout(String file) {
-    this.file = file;
-  }
 
-  // used for testing
-  FileReadSpout(FileReader reader) {
-    this.reader = reader;
-  }
+    public FileReadSpout(String file) {
+        this.file = file;
+    }
 
-	@Override
-	public void open(Map conf, TopologyContext context,
-			SpoutOutputCollector collector) {
-		this.collector = collector;
+    // used for testing
+    FileReadSpout(FileReader reader) {
+        this.reader = reader;
+    }
+
+    @Override
+    public void open(Map conf, TopologyContext context,
+                     SpoutOutputCollector collector) {
+        this.collector = collector;
         Object ackObj = conf.get("topology.acker.executors");
-        if(ackObj != null && ackObj.equals(0)){
+        if (ackObj != null && ackObj.equals(0)) {
             this.ackEnabled = false;
         }
-      // for tests, reader will not be null
-      if(this.reader == null) {
-        this.reader = new FileReader(this.file);
-      }
-	}
-
-	@Override
-	public void nextTuple() {
-    if (ackEnabled) {
-      collector.emit(new Values(reader.nextLine()), count);
-      count++;
-    } else {
-      collector.emit(new Values(reader.nextLine()));
+        // for tests, reader will not be null
+        if (this.reader == null) {
+            this.reader = new FileReader(this.file);
+        }
     }
-	}
 
-	@Override
-	public void declareOutputFields(OutputFieldsDeclarer declarer) {
-		declarer.declare(new Fields(FIELDS));
-	}
+    @Override
+    public void nextTuple() {
+        if (ackEnabled) {
+            collector.emit(new Values(reader.nextLine()), count);
+            count++;
+        } else {
+            collector.emit(new Values(reader.nextLine()));
+        }
+    }
+
+    @Override
+    public void declareOutputFields(OutputFieldsDeclarer declarer) {
+        declarer.declare(new Fields(FIELDS));
+    }
 }

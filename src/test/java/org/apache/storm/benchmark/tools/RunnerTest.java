@@ -28,37 +28,37 @@ import static org.junit.Assert.assertTrue;
 
 public class RunnerTest {
 
-  @Test(dataProvider = "getValidNames")
-  public void getBenchmarkFromValidName(String validName) throws Exception {
-    assertTrue(Runner.getApplicationFromName(validName) instanceof IApplication);
-  }
+    @Test(dataProvider = "getValidNames")
+    public void getBenchmarkFromValidName(String validName) throws Exception {
+        assertTrue(Runner.getApplicationFromName(validName) instanceof IApplication);
+    }
 
-  @Test(dataProvider = "getInValidNames", expectedExceptions = ClassNotFoundException.class)
-  public void throwsExceptionFromInvalidName(String invalidName)
-          throws InstantiationException, IllegalAccessException, ClassNotFoundException {
-    Runner.getApplicationFromName(invalidName);
-  }
+    @Test(dataProvider = "getInValidNames", expectedExceptions = ClassNotFoundException.class)
+    public void throwsExceptionFromInvalidName(String invalidName)
+            throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+        Runner.getApplicationFromName(invalidName);
+    }
 
-  @DataProvider
-  private Object[][] getValidNames() {
-    return new String[][]{
-            {"org.apache.storm.benchmark.topologies.FileReadWordCount"},
-            {"org.apache.storm.benchmark.topologies.SOL"},
-            {"org.apache.storm.benchmark.topologies.Grep"},
-            {"org.apache.storm.benchmark.topologies.PageViewCount"},
-            {"org.apache.storm.benchmark.topologies.UniqueVisitor"},
-            {"org.apache.storm.benchmark.topologies.KafkaWordCount"},
-            {"org.apache.storm.benchmark.topologies.DRPC"},
-            {"org.apache.storm.benchmark.topologies.RollingCount"},
-            {"org.apache.storm.benchmark.topologies.SOL"},
-            {"org.apache.storm.benchmark.topologies.TridentWordCount"},
-            {"org.apache.storm.benchmark.producers.kafka.FileReadKafkaProducer"},
-            {"org.apache.storm.benchmark.producers.kafka.PageViewKafkaProducer"}
-    };
-  }
+    @DataProvider
+    private Object[][] getValidNames() {
+        return new String[][]{
+                {"org.apache.storm.benchmark.topologies.FileReadWordCount"},
+                {"org.apache.storm.benchmark.topologies.SOL"},
+                {"org.apache.storm.benchmark.topologies.Grep"},
+                {"org.apache.storm.benchmark.topologies.PageViewCount"},
+                {"org.apache.storm.benchmark.topologies.UniqueVisitor"},
+                {"org.apache.storm.benchmark.topologies.KafkaWordCount"},
+                {"org.apache.storm.benchmark.topologies.DRPC"},
+                {"org.apache.storm.benchmark.topologies.RollingCount"},
+                {"org.apache.storm.benchmark.topologies.SOL"},
+                {"org.apache.storm.benchmark.topologies.TridentWordCount"},
+                {"org.apache.storm.benchmark.producers.kafka.FileReadKafkaProducer"},
+                {"org.apache.storm.benchmark.producers.kafka.PageViewKafkaProducer"}
+        };
+    }
 
-  @DataProvider
-  private Object[][] getInValidNames() {
-    return new String[][]{{"foo"}, {"bar"}};
-  }
+    @DataProvider
+    private Object[][] getInValidNames() {
+        return new String[][]{{"foo"}, {"bar"}};
+    }
 }

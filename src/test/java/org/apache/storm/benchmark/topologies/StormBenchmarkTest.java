@@ -21,40 +21,40 @@ package org.apache.storm.benchmark.topologies;
 import backtype.storm.Config;
 import backtype.storm.generated.StormTopology;
 import org.apache.storm.benchmark.metrics.BasicMetricsCollector;
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
 import org.apache.storm.benchmark.metrics.DRPCMetricsCollector;
 import org.apache.storm.benchmark.metrics.IMetricsCollector;
+import org.testng.annotations.DataProvider;
+import org.testng.annotations.Test;
 
 import static org.fest.assertions.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 public class StormBenchmarkTest {
-  private static final Config config = new Config();
-  private static final StormTopology topology = mock(StormTopology.class);
+    private static final Config config = new Config();
+    private static final StormTopology topology = mock(StormTopology.class);
 
-  @Test(dataProvider = "getStormBenchmark")
-  public void getMetricsCollectorShouldReturnProperCollector(
-          StormBenchmark benchmark, Class collectorClass) {
-    IMetricsCollector collector = benchmark.getMetricsCollector(config, topology);
-    assertThat(collector)
-            .isNotNull()
-            .isInstanceOf(collectorClass);
-  }
+    @Test(dataProvider = "getStormBenchmark")
+    public void getMetricsCollectorShouldReturnProperCollector(
+            StormBenchmark benchmark, Class collectorClass) {
+        IMetricsCollector collector = benchmark.getMetricsCollector(config, topology);
+        assertThat(collector)
+                .isNotNull()
+                .isInstanceOf(collectorClass);
+    }
 
-  @DataProvider
-  private Object[][] getStormBenchmark() {
-    return new Object[][] {
-            { new FileReadWordCount(), BasicMetricsCollector.class },
-            { new SOL(), BasicMetricsCollector.class },
-            { new RollingCount(), BasicMetricsCollector.class },
-            { new Grep(), BasicMetricsCollector.class },
-            { new DRPC(), DRPCMetricsCollector.class },
-            { new TridentWordCount(), BasicMetricsCollector.class },
-            { new PageViewCount(), BasicMetricsCollector.class },
-            { new UniqueVisitor(), BasicMetricsCollector.class },
-            { new DataClean(), BasicMetricsCollector.class }
+    @DataProvider
+    private Object[][] getStormBenchmark() {
+        return new Object[][]{
+                {new FileReadWordCount(), BasicMetricsCollector.class},
+                {new SOL(), BasicMetricsCollector.class},
+                {new RollingCount(), BasicMetricsCollector.class},
+                {new Grep(), BasicMetricsCollector.class},
+                {new DRPC(), DRPCMetricsCollector.class},
+                {new TridentWordCount(), BasicMetricsCollector.class},
+                {new PageViewCount(), BasicMetricsCollector.class},
+                {new UniqueVisitor(), BasicMetricsCollector.class},
+                {new DataClean(), BasicMetricsCollector.class}
 
-    };
-  }
+        };
+    }
 }

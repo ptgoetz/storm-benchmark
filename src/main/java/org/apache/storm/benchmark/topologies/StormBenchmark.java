@@ -22,8 +22,8 @@ import backtype.storm.Config;
 import backtype.storm.generated.StormTopology;
 import com.google.common.collect.Sets;
 import org.apache.log4j.Logger;
-import org.apache.storm.benchmark.metrics.BasicMetricsCollector;
 import org.apache.storm.benchmark.api.Benchmark;
+import org.apache.storm.benchmark.metrics.BasicMetricsCollector;
 import org.apache.storm.benchmark.metrics.IMetricsCollector;
 
 import java.util.Set;
@@ -32,21 +32,21 @@ import static org.apache.storm.benchmark.metrics.IMetricsCollector.MetricsItem;
 
 public abstract class StormBenchmark extends Benchmark {
 
-  private static final Logger LOG = Logger.getLogger(StormBenchmark.class);
-  public static final String DEFAULT_TOPOLOGY_NAME = "benchmark";
+    public static final String DEFAULT_TOPOLOGY_NAME = "benchmark";
+    private static final Logger LOG = Logger.getLogger(StormBenchmark.class);
 
-  @Override
-  public IMetricsCollector getMetricsCollector(Config config, StormTopology topology) {
+    @Override
+    public IMetricsCollector getMetricsCollector(Config config, StormTopology topology) {
 
-    Set<MetricsItem> items = Sets.newHashSet(
-            MetricsItem.SUPERVISOR_STATS,
-            MetricsItem.TOPOLOGY_STATS,
-            MetricsItem.THROUGHPUT,
-            MetricsItem.SPOUT_THROUGHPUT,
-            MetricsItem.SPOUT_LATENCY
-            );
-    return new BasicMetricsCollector(config, topology, items);
-  }
+        Set<MetricsItem> items = Sets.newHashSet(
+                MetricsItem.SUPERVISOR_STATS,
+                MetricsItem.TOPOLOGY_STATS,
+                MetricsItem.THROUGHPUT,
+                MetricsItem.SPOUT_THROUGHPUT,
+                MetricsItem.SPOUT_LATENCY
+        );
+        return new BasicMetricsCollector(config, topology, items);
+    }
 
 
 }

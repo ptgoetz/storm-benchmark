@@ -27,5 +27,5 @@ import backtype.storm.generated.StormTopology;
  * {@link IBenchmark} or {@link IProducer}
  */
 public interface IApplication {
-  public StormTopology getTopology(Config config);
+    public StormTopology getTopology(Config config);
 }

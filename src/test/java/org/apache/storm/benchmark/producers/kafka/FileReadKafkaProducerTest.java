@@ -22,8 +22,8 @@ import backtype.storm.Config;
 import backtype.storm.spout.SpoutOutputCollector;
 import backtype.storm.task.TopologyContext;
 import backtype.storm.tuple.Values;
-import org.testng.annotations.Test;
 import org.apache.storm.benchmark.util.FileReader;
+import org.testng.annotations.Test;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -33,28 +33,28 @@ import static org.mockito.Mockito.*;
 
 public class FileReadKafkaProducerTest {
 
-  private static final Map ANY_CONF = new HashMap();
+    private static final Map ANY_CONF = new HashMap();
 
-  @Test
-  public void spoutShouldBeKafkaFileReadSpout() {
-    KafkaProducer producer = new FileReadKafkaProducer();
-    producer.getTopology(new Config());
-    assertThat(producer.getSpout()).isInstanceOf(FileReadKafkaProducer.FileReadSpout.class);
-  }
+    @Test
+    public void spoutShouldBeKafkaFileReadSpout() {
+        KafkaProducer producer = new FileReadKafkaProducer();
+        producer.getTopology(new Config());
+        assertThat(producer.getSpout()).isInstanceOf(FileReadKafkaProducer.FileReadSpout.class);
+    }
 
- @Test
-  public void nextTupleShouldEmitNextLineOfFile() throws Exception {
-    FileReader reader = mock(FileReader.class);
-    String message = "line";
-    FileReadKafkaProducer.FileReadSpout spout = new FileReadKafkaProducer.FileReadSpout(reader);
-    TopologyContext context = mock(TopologyContext.class);
-    SpoutOutputCollector collector = mock(SpoutOutputCollector.class);
+    @Test
+    public void nextTupleShouldEmitNextLineOfFile() throws Exception {
+        FileReader reader = mock(FileReader.class);
+        String message = "line";
+        FileReadKafkaProducer.FileReadSpout spout = new FileReadKafkaProducer.FileReadSpout(reader);
+        TopologyContext context = mock(TopologyContext.class);
+        SpoutOutputCollector collector = mock(SpoutOutputCollector.class);
 
-    when(reader.nextLine()).thenReturn(message);
+        when(reader.nextLine()).thenReturn(message);
 
-    spout.open(ANY_CONF, context, collector);
-    spout.nextTuple();
+        spout.open(ANY_CONF, context, collector);
+        spout.nextTuple();
 
-    verify(collector, times(1)).emit(any(Values.class));
-  }
+        verify(collector, times(1)).emit(any(Values.class));
+    }
 }

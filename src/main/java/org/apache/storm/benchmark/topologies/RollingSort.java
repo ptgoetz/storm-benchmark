@@ -30,134 +30,134 @@ import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Tuple;
 import backtype.storm.tuple.Values;
 import org.apache.log4j.Logger;
-import org.apache.storm.benchmark.util.TupleHelpers;
 import org.apache.storm.benchmark.lib.spout.RandomMessageSpout;
 import org.apache.storm.benchmark.util.BenchmarkUtils;
+import org.apache.storm.benchmark.util.TupleHelpers;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 public class RollingSort extends StormBenchmark {
 
-  private static final Logger LOG = Logger.getLogger(RollingSort.class);
-
-  public static final String SPOUT_ID = "spout";
-  public static final String SPOUT_NUM = "component.spout_num";
-  public static final String SORT_BOLT_ID ="sort";
-  public static final String SORT_BOLT_NUM = "component.sort_bolt_num";
-  public static final int DEFAULT_SPOUT_NUM = 4;
-  public static final int DEFAULT_SORT_BOLT_NUM = 8;
-
-  private IRichSpout spout;
-
-  @Override
-  public StormTopology getTopology(Config config) {
-    final int spoutNum = BenchmarkUtils.getInt(config, SPOUT_NUM, DEFAULT_SPOUT_NUM);
-    final int boltNum =  BenchmarkUtils.getInt(config, SORT_BOLT_NUM, DEFAULT_SORT_BOLT_NUM);
-    final int msgSize = BenchmarkUtils.getInt(config, RandomMessageSpout.MESSAGE_SIZE,
-            RandomMessageSpout.DEFAULT_MESSAGE_SIZE);
-    final int chunkSize = BenchmarkUtils.getInt(config, SortBolt.CHUNK_SIZE,
-            SortBolt.DEFAULT_CHUNK_SIZE);
-    final int emitFreq = BenchmarkUtils.getInt(config, SortBolt.EMIT_FREQ,
-            SortBolt.DEFAULT_EMIT_FREQ);
-    spout = new RandomMessageSpout(msgSize, BenchmarkUtils.ifAckEnabled(config));
-    TopologyBuilder builder = new TopologyBuilder();
-    builder.setSpout(SPOUT_ID, spout, spoutNum);
-    builder.setBolt(SORT_BOLT_ID, new SortBolt(emitFreq, chunkSize), boltNum)
-            .localOrShuffleGrouping(SPOUT_ID);
-    return builder.createTopology();
-  }
-
-  public static class SortBolt extends BaseBasicBolt {
-
-    public static final String EMIT_FREQ = "emit.frequency";
-    public static final int DEFAULT_EMIT_FREQ = 60;  // 60s
-    public static final String CHUNK_SIZE = "chunk.size";
-    public static final int DEFAULT_CHUNK_SIZE = 100;
-    public static final String FIELDS = "sorted_data";
-
-    private final int emitFrequencyInSeconds;
-    private final int chunkSize;
-    private int index = 0;
-    private MutableComparable[] data;
-
-
-    public SortBolt(int emitFrequencyInSeconds, int chunkSize) {
-      this.emitFrequencyInSeconds = emitFrequencyInSeconds;
-      this.chunkSize = chunkSize;
-    }
+    public static final String SPOUT_ID = "spout";
+    public static final String SPOUT_NUM = "component.spout_num";
+    public static final String SORT_BOLT_ID = "sort";
+    public static final String SORT_BOLT_NUM = "component.sort_bolt_num";
+    public static final int DEFAULT_SPOUT_NUM = 4;
+    public static final int DEFAULT_SORT_BOLT_NUM = 8;
+    private static final Logger LOG = Logger.getLogger(RollingSort.class);
+    private IRichSpout spout;
 
     @Override
-    public void prepare(Map stormConf, TopologyContext context) {
-      this.data = new MutableComparable[this.chunkSize];
-      for (int i = 0; i < this.chunkSize; i++) {
-        this.data[i] = new MutableComparable();
-      }
+    public StormTopology getTopology(Config config) {
+        final int spoutNum = BenchmarkUtils.getInt(config, SPOUT_NUM, DEFAULT_SPOUT_NUM);
+        final int boltNum = BenchmarkUtils.getInt(config, SORT_BOLT_NUM, DEFAULT_SORT_BOLT_NUM);
+        final int msgSize = BenchmarkUtils.getInt(config, RandomMessageSpout.MESSAGE_SIZE,
+                RandomMessageSpout.DEFAULT_MESSAGE_SIZE);
+        final int chunkSize = BenchmarkUtils.getInt(config, SortBolt.CHUNK_SIZE,
+                SortBolt.DEFAULT_CHUNK_SIZE);
+        final int emitFreq = BenchmarkUtils.getInt(config, SortBolt.EMIT_FREQ,
+                SortBolt.DEFAULT_EMIT_FREQ);
+        spout = new RandomMessageSpout(msgSize, BenchmarkUtils.ifAckEnabled(config));
+        TopologyBuilder builder = new TopologyBuilder();
+        builder.setSpout(SPOUT_ID, spout, spoutNum);
+        builder.setBolt(SORT_BOLT_ID, new SortBolt(emitFreq, chunkSize), boltNum)
+                .localOrShuffleGrouping(SPOUT_ID);
+        return builder.createTopology();
     }
 
-    @Override
-    public void execute(Tuple tuple, BasicOutputCollector basicOutputCollector) {
-      if (TupleHelpers.isTickTuple(tuple)) {
-        Arrays.sort(data);
-        basicOutputCollector.emit(new Values(data));
-        LOG.info("index = " + index);
-      } else {
-        Object obj = tuple.getValue(0);
-        if (obj instanceof Comparable) {
-          data[index].set((Comparable) obj);
-        } else {
-          throw new RuntimeException("tuple value is not a Comparable");
+    public static class SortBolt extends BaseBasicBolt {
+
+        public static final String EMIT_FREQ = "emit.frequency";
+        public static final int DEFAULT_EMIT_FREQ = 60;  // 60s
+        public static final String CHUNK_SIZE = "chunk.size";
+        public static final int DEFAULT_CHUNK_SIZE = 100;
+        public static final String FIELDS = "sorted_data";
+
+        private final int emitFrequencyInSeconds;
+        private final int chunkSize;
+        private int index = 0;
+        private MutableComparable[] data;
+
+
+        public SortBolt(int emitFrequencyInSeconds, int chunkSize) {
+            this.emitFrequencyInSeconds = emitFrequencyInSeconds;
+            this.chunkSize = chunkSize;
         }
-        index = (index + 1 == chunkSize) ? 0 : index + 1;
-      }
+
+        @Override
+        public void prepare(Map stormConf, TopologyContext context) {
+            this.data = new MutableComparable[this.chunkSize];
+            for (int i = 0; i < this.chunkSize; i++) {
+                this.data[i] = new MutableComparable();
+            }
+        }
+
+        @Override
+        public void execute(Tuple tuple, BasicOutputCollector basicOutputCollector) {
+            if (TupleHelpers.isTickTuple(tuple)) {
+                Arrays.sort(data);
+                basicOutputCollector.emit(new Values(data));
+                LOG.info("index = " + index);
+            } else {
+                Object obj = tuple.getValue(0);
+                if (obj instanceof Comparable) {
+                    data[index].set((Comparable) obj);
+                } else {
+                    throw new RuntimeException("tuple value is not a Comparable");
+                }
+                index = (index + 1 == chunkSize) ? 0 : index + 1;
+            }
+        }
+
+        @Override
+        public void declareOutputFields(OutputFieldsDeclarer outputFieldsDeclarer) {
+            outputFieldsDeclarer.declare(new Fields(FIELDS));
+        }
+
+        @Override
+        public Map<String, Object> getComponentConfiguration() {
+            Map<String, Object> conf = new HashMap<String, Object>();
+            conf.put(Config.TOPOLOGY_TICK_TUPLE_FREQ_SECS, emitFrequencyInSeconds);
+            return conf;
+        }
     }
 
-    @Override
-    public void declareOutputFields(OutputFieldsDeclarer outputFieldsDeclarer) {
-      outputFieldsDeclarer.declare(new Fields(FIELDS));
+    private static class MutableComparable implements Comparable, Serializable {
+        private static final long serialVersionUID = -5417151427431486637L;
+        private Comparable c = null;
+
+        public MutableComparable() {
+
+        }
+
+        public MutableComparable(Comparable c) {
+            this.c = c;
+        }
+
+        public void set(Comparable c) {
+            this.c = c;
+        }
+
+        public Comparable get() {
+            return c;
+        }
+
+        @Override
+        public int compareTo(Object other) {
+            if (other == null) return 1;
+            Comparable oc = ((MutableComparable) other).get();
+            if (null == c && null == oc) {
+                return 0;
+            } else if (null == c) {
+                return -1;
+            } else if (null == oc) {
+                return 1;
+            } else {
+                return c.compareTo(oc);
+            }
+        }
     }
-
-    @Override
-    public Map<String, Object> getComponentConfiguration() {
-      Map<String, Object> conf = new HashMap<String, Object>();
-      conf.put(Config.TOPOLOGY_TICK_TUPLE_FREQ_SECS, emitFrequencyInSeconds);
-      return conf;
-    }
-  }
-
-  private static class MutableComparable implements Comparable, Serializable {
-    private static final long serialVersionUID = -5417151427431486637L;
-    private Comparable c = null;
-
-    public MutableComparable() {
-
-    }
-
-    public MutableComparable(Comparable c) {
-      this.c = c;
-    }
-
-    public void set(Comparable c) {
-      this.c = c;
-    }
-
-    public Comparable get() {
-      return c;
-    }
-
-    @Override
-    public int compareTo(Object other) {
-      if (other == null) return 1;
-      Comparable oc = ((MutableComparable) other).get();
-      if (null == c && null == oc) {
-        return 0;
-      } else if (null == c) {
-        return -1;
-      } else if (null == oc) {
-        return 1;
-      } else {
-        return c.compareTo(oc);
-      }
-    }
-  }
 }

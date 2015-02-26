@@ -29,16 +29,16 @@ import storm.trident.tuple.TridentTuple;
  */
 public class Print extends BaseFunction {
 
-  private static final Logger LOG = Logger.getLogger(Print.class);
-  private final String fields;
+    private static final Logger LOG = Logger.getLogger(Print.class);
+    private final String fields;
 
-  public Print(String fields) {
-    this.fields = fields;
-  }
+    public Print(String fields) {
+        this.fields = fields;
+    }
 
-  @Override
-  public void execute(TridentTuple tuple, TridentCollector collector) {
-    System.out.println("Print " + fields + ": " + tuple.toString());
-    collector.emit(tuple);
-  }
+    @Override
+    public void execute(TridentTuple tuple, TridentCollector collector) {
+        System.out.println("Print " + fields + ": " + tuple.toString());
+        collector.emit(tuple);
+    }
 }

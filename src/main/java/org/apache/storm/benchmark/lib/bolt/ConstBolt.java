@@ -29,23 +29,23 @@ import backtype.storm.tuple.Values;
 import java.util.Map;
 
 public class ConstBolt extends BaseBasicBolt {
-  private static final long serialVersionUID = -5313598399155365865L;
-  public static final String FIELDS = "message";
+    public static final String FIELDS = "message";
+    private static final long serialVersionUID = -5313598399155365865L;
 
-  public ConstBolt() {
-  }
+    public ConstBolt() {
+    }
 
-  @Override
-  public void prepare(Map conf, TopologyContext context) {
-  }
+    @Override
+    public void prepare(Map conf, TopologyContext context) {
+    }
 
-  @Override
-  public void execute(Tuple tuple, BasicOutputCollector collector) {
-    collector.emit(new Values(tuple.getValue(0)));
-  }
+    @Override
+    public void execute(Tuple tuple, BasicOutputCollector collector) {
+        collector.emit(new Values(tuple.getValue(0)));
+    }
 
-  @Override
-  public void declareOutputFields(OutputFieldsDeclarer declarer) {
-    declarer.declare(new Fields(FIELDS));
-  }
+    @Override
+    public void declareOutputFields(OutputFieldsDeclarer declarer) {
+        declarer.declare(new Fields(FIELDS));
+    }
 }

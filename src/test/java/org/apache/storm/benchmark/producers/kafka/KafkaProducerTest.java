@@ -29,22 +29,22 @@ import static org.fest.assertions.api.Assertions.assertThat;
 
 public class KafkaProducerTest {
 
-  @Test(dataProvider = "getKafkaProducer")
-  public void componentParallelismCouldBeSetThroughConfig(KafkaProducer producer) {
-    Config config = new Config();
-    config.put(KafkaProducer.SPOUT_NUM, 4);
-    config.put(KafkaProducer.BOLT_NUM, 3);
-    StormTopology topology = producer.getTopology(config);
-    assertThat(topology).isNotNull();
-    TestUtils.verifyParallelism(Utils.getComponentCommon(topology, KafkaProducer.SPOUT_ID), 4);
-    TestUtils.verifyParallelism(Utils.getComponentCommon(topology, KafkaProducer.BOLT_ID), 3);
-  }
+    @Test(dataProvider = "getKafkaProducer")
+    public void componentParallelismCouldBeSetThroughConfig(KafkaProducer producer) {
+        Config config = new Config();
+        config.put(KafkaProducer.SPOUT_NUM, 4);
+        config.put(KafkaProducer.BOLT_NUM, 3);
+        StormTopology topology = producer.getTopology(config);
+        assertThat(topology).isNotNull();
+        TestUtils.verifyParallelism(Utils.getComponentCommon(topology, KafkaProducer.SPOUT_ID), 4);
+        TestUtils.verifyParallelism(Utils.getComponentCommon(topology, KafkaProducer.BOLT_ID), 3);
+    }
 
-  @DataProvider
-  private Object[][] getKafkaProducer() {
-    return new Object[][] {
-            { new FileReadKafkaProducer() },
-            { new PageViewKafkaProducer() }
-    };
-  }
+    @DataProvider
+    private Object[][] getKafkaProducer() {
+        return new Object[][]{
+                {new FileReadKafkaProducer()},
+                {new PageViewKafkaProducer()}
+        };
+    }
 }

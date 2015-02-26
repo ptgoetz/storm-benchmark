@@ -29,38 +29,40 @@ import org.apache.storm.benchmark.api.IBenchmark;
 import org.apache.storm.benchmark.metrics.IMetricsCollector;
 import org.apache.storm.benchmark.util.BenchmarkUtils;
 
-import static org.apache.storm.benchmark.BenchmarkConstants.*;
+import static org.apache.storm.benchmark.BenchmarkConstants.DEFAULT_TOTAL_TIME;
+import static org.apache.storm.benchmark.BenchmarkConstants.METRICS_TOTAL_TIME;
+
 public class LocalRunner {
-  private static final Logger LOG = Logger.getLogger(Runner.class);
-  private static final String PACKAGE = "storm.benchmark.benchmarks";
+    private static final Logger LOG = Logger.getLogger(Runner.class);
+    private static final String PACKAGE = "storm.benchmark.benchmarks";
 
-  public static void main(String[] args) throws Exception {
-    if (null == args || args.length < 1) {
-      throw new IllegalArgumentException("no benchmark is set");
+    public static void main(String[] args) throws Exception {
+        if (null == args || args.length < 1) {
+            throw new IllegalArgumentException("no benchmark is set");
+        }
+        run(args[0]);
     }
-    run(args[0]);
-  }
 
-  private static void run(String name)
-          throws ClassNotFoundException, IllegalAccessException,
-          InstantiationException, AlreadyAliveException, InvalidTopologyException {
-    LOG.info("running benchmark " + name);
-    IBenchmark benchmark =  (IBenchmark) Runner.getApplicationFromName(PACKAGE + "." + name);
-    Config config = new Config();
-    config.putAll(Utils.readStormConfig());
-    config.setDebug(true);
-    StormTopology topology = benchmark.getTopology(config);
-    LocalCluster localCluster = new LocalCluster();
-    localCluster.submitTopology(name, config, topology);
-    final int runtime = BenchmarkUtils.getInt(config, METRICS_TOTAL_TIME,
-            DEFAULT_TOTAL_TIME);
-    IMetricsCollector collector = benchmark.getMetricsCollector(config, topology);
-    collector.run();
-    try {
-      Thread.sleep(runtime);
-    } catch (InterruptedException e) {
-      LOG.error("benchmark interrupted", e);
+    private static void run(String name)
+            throws ClassNotFoundException, IllegalAccessException,
+            InstantiationException, AlreadyAliveException, InvalidTopologyException {
+        LOG.info("running benchmark " + name);
+        IBenchmark benchmark = (IBenchmark) Runner.getApplicationFromName(PACKAGE + "." + name);
+        Config config = new Config();
+        config.putAll(Utils.readStormConfig());
+        config.setDebug(true);
+        StormTopology topology = benchmark.getTopology(config);
+        LocalCluster localCluster = new LocalCluster();
+        localCluster.submitTopology(name, config, topology);
+        final int runtime = BenchmarkUtils.getInt(config, METRICS_TOTAL_TIME,
+                DEFAULT_TOTAL_TIME);
+        IMetricsCollector collector = benchmark.getMetricsCollector(config, topology);
+        collector.run();
+        try {
+            Thread.sleep(runtime);
+        } catch (InterruptedException e) {
+            LOG.error("benchmark interrupted", e);
+        }
+        localCluster.shutdown();
     }
-    localCluster.shutdown();
-  }
 }
