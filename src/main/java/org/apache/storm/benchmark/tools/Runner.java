@@ -20,7 +20,6 @@ package org.apache.storm.benchmark.tools;
 
 import backtype.storm.Config;
 import backtype.storm.StormSubmitter;
-import backtype.storm.generated.AlreadyAliveException;
 import backtype.storm.generated.InvalidTopologyException;
 import backtype.storm.generated.StormTopology;
 import backtype.storm.utils.Utils;
@@ -53,8 +52,7 @@ public class Runner {
   }
 
   public static void run(String name)
-          throws ClassNotFoundException, IllegalAccessException,
-          InstantiationException, AlreadyAliveException, InvalidTopologyException {
+          throws Exception {
       initConfig();
       IApplication app = getApplicationFromName(name);
     if (app instanceof Benchmark) {
@@ -94,23 +92,21 @@ public class Runner {
 
 
     public static void runBenchmark(IBenchmark benchmark)
-          throws AlreadyAliveException, InvalidTopologyException,
-          ClassNotFoundException, IllegalAccessException, InstantiationException {
+          throws Exception {
     runApplication(benchmark);
     IMetricsCollector collector = benchmark.getMetricsCollector(config, topology);
     collector.run();
   }
 
   public static void runProducer(IProducer producer)
-          throws AlreadyAliveException, InvalidTopologyException,
-          ClassNotFoundException, IllegalAccessException, InstantiationException {
+          throws Exception {
     runApplication(producer);
   }
 
 
 
   private static void runApplication(IApplication app)
-          throws AlreadyAliveException, InvalidTopologyException {
+          throws Exception {
     String name = (String) config.get(Config.TOPOLOGY_NAME);
     topology = app.getTopology(config);
     StormSubmitter.submitTopology(name, config, topology);

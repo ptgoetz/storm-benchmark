@@ -1,45 +1,36 @@
 benchmark-suite:
-  - benchmark.enabled: false
+  - benchmark.enabled: true
     benchmark.label: "trident-wordcount"
-    topology.class: storm.benchmark.benchmarks.TridentFileReadWordCount
-    #benchmark.poll.interval: 60000
-    metrics.poll: 60000
+    topology.class: org.apache.storm.benchmark.topologies.TridentFileReadWordCount
 
-    #benchmark.runtime: 300000
-    metrics.time:  300000
-
-    #benchmark.report.dir: /Users/tgoetz/tmp
-    metrics.path: /Users/tgoetz/tmp
+    benchmark.poll.interval: 60000
+    benchmark.runtime: 300000
+    benchmark.report.dir: /Users/tgoetz/tmp
 
     topology.config:
       #storm config params
       topology.name: "trident-wordcount"
-#      topology.acker.executors: 2
+      topology.acker.executors: 2
       topology.max.spout.pending: 4
       topology.workers: 2
 
       # TridentFileReadWordCount config params
       trident.spout.batch.size: 2000
-      component.spout_num: 1
+      component.spout_num: 4
       component.count_bolt_num: 4
 
-  - benchmark.enabled: true
+  - benchmark.enabled: false
     benchmark.label: "core-wordcount"
-    topology.class: storm.benchmark.benchmarks.FileReadWordCount
-    #metrics.poll.interval: 60000
-    metrics.poll: 60000
-
-    #benchmark.runtime: 300000
-    metrics.time:  300000
-
-    #benchmark.report.dir: /Users/tgoetz/tmp
-    metrics.path: /Users/tgoetz/tmp
+    topology.class: org.apache.storm.benchmark.topologies.FileReadWordCount
+    benchmark.poll.interval: 60000
+    benchmark.runtime: 300000
+    benchmark.report.dir: /Users/tgoetz/tmp
 
     topology.config:
       #storm config params
       topology.name: "wordcount"
-#      topology.acker.executors: 2
-      topology.max.spout.pending: 4
+      topology.acker.executors: 2
+      topology.max.spout.pending: 200
       topology.workers: 2
 
       # FileReadWordCount config params
@@ -50,21 +41,16 @@ benchmark-suite:
 
   - benchmark.enabled: false
     benchmark.label: "speed-of-light"
-    topology.class: storm.benchmark.benchmarks.SOL
-    #metrics.poll.interval: 60000
-    metrics.poll: 60000
-
-    #benchmark.runtime: 300000
-    metrics.time:  300000
-
-    #benchmark.report.dir: /Users/tgoetz/tmp
-    metrics.path: /Users/tgoetz/tmp
+    topology.class: org.apache.storm.benchmark.topologies.SOL
+    benchmark.poll.interval: 60000
+    benchmark.runtime: 300000
+    benchmark.report.dir: /Users/tgoetz/tmp
 
     topology.config:
       #storm config params
       topology.name: "sol"
       topology.acker.executors: 2
-      topology.max.spout.pending: 4
+      topology.max.spout.pending: 200
       topology.workers: 2
 
       # SOL config params

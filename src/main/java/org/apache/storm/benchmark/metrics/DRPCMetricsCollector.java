@@ -26,7 +26,8 @@ package org.apache.storm.benchmark.metrics;
  */
 
 import backtype.storm.Config;
-import backtype.storm.generated.DRPCExecutionException;
+//import backtype.storm.generated.AuthorizationException;
+//import backtype.storm.generated.DRPCExecutionException;
 import backtype.storm.utils.DRPCClient;
 import org.apache.log4j.Logger;
 import org.apache.storm.benchmark.BenchmarkConstants;
@@ -87,12 +88,8 @@ public class DRPCMetricsCollector implements IMetricsCollector {
       double avgLat = 0 == count ? 0.0 : (double) totalLat / count;
       dataWriter.println(String.format("average latency = %f ms", avgLat));
       dataWriter.close();
-    } catch (DRPCExecutionException e) {
-      LOG.error("fail to execute drpc function", e);
-    } catch (TException e) {
-      LOG.error("thrift error", e);
-    } catch (InterruptedException e) {
-      LOG.error("interrupted", e);
+    }  catch (Exception e) {
+      LOG.error("failed to execute drpc function", e);
     }
   }
 
@@ -105,7 +102,7 @@ public class DRPCMetricsCollector implements IMetricsCollector {
     return ret;
   }
 
-  private long execute(String arg, PrintWriter writer) throws TException, DRPCExecutionException {
+  private long execute(String arg, PrintWriter writer) throws Exception {
     LOG.debug(String.format("executing %s('%s')", function, arg));
     DRPCClient client = new DRPCClient(server, port);
     long start = System.currentTimeMillis();

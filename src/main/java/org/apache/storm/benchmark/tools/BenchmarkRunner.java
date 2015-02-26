@@ -1,12 +1,31 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License
+ */
 package org.apache.storm.benchmark.tools;
 
 import org.apache.commons.cli.*;
+import static org.apache.storm.benchmark.BenchmarkConstants.*;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Map;
+
 
 public class BenchmarkRunner {
 
@@ -76,7 +95,7 @@ public class BenchmarkRunner {
         command.add("storm");
         command.add("jar");
         command.add("target/storm-benchmark-0.1.0-jar-with-dependencies.jar");
-        command.add("Runner");
+        command.add("org.apache.storm.benchmark.tools.Runner");
         command.add(topologyClass);
         addBenchmarkCommandOpts(command, benchmarkConfig);
 
@@ -130,7 +149,7 @@ public class BenchmarkRunner {
     }
 
     private static void addBenchmarkCommandOpts(ArrayList<String> cmd, Map<String, Object> config) {
-        String[] opts = new String[]{"benchmark.poll.interval", "benchmark.runtime", "benchmark.report.dir", "benchmark.label"};
+        String[] opts = new String[]{METRICS_POLL_INTERVAL, METRICS_TOTAL_TIME, METRICS_PATH, "benchmark.label"};
         for (String s : opts) {
             cmd.add("-c");
             cmd.add(s + "=" + config.get(s));
