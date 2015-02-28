@@ -88,8 +88,6 @@ public class BasicMetricsCollector implements IMetricsCollector {
         msgSize = collectThroughputMB ?
                 BenchmarkUtils.getInt(stormConfig, RandomMessageSpout.MESSAGE_SIZE,
                         RandomMessageSpout.DEFAULT_MESSAGE_SIZE) : 0;
-
-        System.out.println("Message size: " + msgSize);
     }
 
     @Override

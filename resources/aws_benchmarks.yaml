@@ -1,0 +1,98 @@
+benchmark-suite:
+
+
+# This is the one with the best throughput vs. latency
+# but AWS performance varies wildly. Throughput stays roughly the same,
+# but latency is pretty variable.
+  - benchmark.enabled: true
+    benchmark.label: "trident-wordcount2"
+    topology.class: org.apache.storm.benchmark.topologies.TridentFileReadWordCount
+
+    benchmark.poll.interval: 60000
+    benchmark.runtime: 300000
+    benchmark.report.dir: /Users/tgoetz/tmp
+
+    topology.config:
+      #storm config params
+      topology.name: "trident-wordcount"
+      topology.acker.executors: 4
+      topology.max.spout.pending: 4
+      topology.workers: 3
+
+      # TridentFileReadWordCount config params
+      trident.spout.batch.size: 2000
+      component.spout_num: 23
+      component.count_bolt_num: 46
+
+
+# Increasing workers per node does not always improve performance.
+# Here performance will be roughly the same as with 3 workers (one per node)
+  - benchmark.enabled: false
+    benchmark.label: "trident-wordcount3-6-workers"
+    topology.class: org.apache.storm.benchmark.topologies.TridentFileReadWordCount
+
+    benchmark.poll.interval: 60000
+    benchmark.runtime: 300000
+    benchmark.report.dir: /Users/tgoetz/tmp
+
+    topology.config:
+      #storm config params
+      topology.name: "trident-wordcount"
+      topology.acker.executors: 6
+      topology.max.spout.pending: 4
+      topology.workers: 6
+
+      # TridentFileReadWordCount config params
+      trident.spout.batch.size: 2000
+      component.spout_num: 23
+      component.count_bolt_num: 46
+
+
+
+
+
+    # balancing throughput vs. latency.
+  - benchmark.enabled: true
+    benchmark.label: "core-wordcount2"
+    topology.class: org.apache.storm.benchmark.topologies.FileReadWordCount
+    benchmark.poll.interval: 60000
+    benchmark.runtime: 300000
+    benchmark.report.dir: /Users/tgoetz/tmp
+
+    topology.config:
+      #storm config params
+      topology.name: "wordcount"
+
+      topology.acker.executors: 3
+      topology.max.spout.pending: 80
+      topology.workers: 3
+
+      # FileReadWordCount config params
+      component.count_bolt_num: 30
+      component.split_bolt_num: 15
+      component.spout_num: 15
+
+
+    # increasing max spout pending can increase throughput,
+    # but adds to overall latency
+  - benchmark.enabled: false
+    benchmark.label: "core-wordcount"
+    topology.class: org.apache.storm.benchmark.topologies.FileReadWordCount
+    benchmark.poll.interval: 60000
+    benchmark.runtime: 300000
+    benchmark.report.dir: /Users/tgoetz/tmp
+
+    topology.config:
+      #storm config params
+      topology.name: "wordcount"
+
+      # with core-storm (one at a time processing) increasing the number of ackers can
+      # improve performance since there is a greater overhead
+      topology.acker.executors: 3
+      topology.max.spout.pending: 200
+      topology.workers: 3
+
+      # FileReadWordCount config params
+      component.count_bolt_num: 30
+      component.split_bolt_num: 15
+      component.spout_num: 15

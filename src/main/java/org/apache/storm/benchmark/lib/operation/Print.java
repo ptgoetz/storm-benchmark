@@ -19,6 +19,7 @@
 package org.apache.storm.benchmark.lib.operation;
 
 import org.apache.log4j.Logger;
+import org.slf4j.LoggerFactory;
 import storm.trident.operation.BaseFunction;
 import storm.trident.operation.TridentCollector;
 import storm.trident.tuple.TridentTuple;
@@ -28,8 +29,8 @@ import storm.trident.tuple.TridentTuple;
  * for debug purpose
  */
 public class Print extends BaseFunction {
+    private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(Print.class);
 
-    private static final Logger LOG = Logger.getLogger(Print.class);
     private final String fields;
 
     public Print(String fields) {
@@ -38,7 +39,7 @@ public class Print extends BaseFunction {
 
     @Override
     public void execute(TridentTuple tuple, TridentCollector collector) {
-        System.out.println("Print " + fields + ": " + tuple.toString());
+        LOG.debug("Print " + fields + ": " + tuple.toString());
         collector.emit(tuple);
     }
 }

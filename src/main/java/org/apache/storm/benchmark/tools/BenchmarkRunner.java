@@ -18,6 +18,9 @@
 package org.apache.storm.benchmark.tools;
 
 import org.apache.commons.cli.*;
+import org.apache.storm.benchmark.BenchmarkConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.FileInputStream;
@@ -29,9 +32,11 @@ import static org.apache.storm.benchmark.BenchmarkConstants.*;
 
 
 public class BenchmarkRunner {
+    public static final Logger LOG = LoggerFactory.getLogger(BenchmarkRunner.class);
 
     public static void main(String[] args) throws Exception {
 
+        // TODO actually do something with the options, for now they are ignored
         Options options = new Options();
 
         Option runTimeOpt = OptionBuilder.hasArgs(1)
@@ -66,7 +71,7 @@ public class BenchmarkRunner {
 
         String[] argArray = cmd.getArgs();
         runBenchmarks(cmd);
-        System.out.println("Benchmark run complete.");
+        LOG.info("Benchmark run complete.");
     }
 
     private static void usage(Options options) {
@@ -84,10 +89,19 @@ public class BenchmarkRunner {
         in.close();
 
         ArrayList<Map<String, Object>> benchmarks = (ArrayList<Map<String, Object>>) suiteConf.get("benchmark-suite");
-        System.out.println("Found " + benchmarks.size() + " benchmarks.");
+        LOG.info("Found " + benchmarks.size() + " benchmarks.");
+        int benchmarkCount = 0;
         for (Map<String, Object> config : benchmarks) {
-            if ((Boolean) config.get("benchmark.enabled") == true)
+            if ((Boolean) config.get("benchmark.enabled") == true) {
+                LOG.info("Will run benchmark: {}", config.get("benchmark.label"));
+                benchmarkCount++;
+            }
+        }
+        LOG.info("Running {} of {} benchmarks.", benchmarkCount, benchmarks.size());
+        for (Map<String, Object> config : benchmarks) {
+            if ((Boolean) config.get("benchmark.enabled") == true) {
                 runTest((String) config.get("topology.class"), config);
+            }
         }
     }
 
@@ -95,6 +109,7 @@ public class BenchmarkRunner {
         ArrayList<String> command = new ArrayList<String>();
         command.add("storm");
         command.add("jar");
+        //FIXME NOW!!!!!!!
         command.add("target/storm-benchmark-0.1.0-jar-with-dependencies.jar");
         command.add("org.apache.storm.benchmark.tools.Runner");
         command.add(topologyClass);
@@ -107,9 +122,9 @@ public class BenchmarkRunner {
         Thread t = new Thread(new StreamRedirect(proc.getInputStream()));
         t.start();
 
-        System.out.println("started process");
+        LOG.info("started process");
         int exitVal = proc.waitFor();
-        System.out.println("exitVal=" + exitVal);
+        LOG.info("exitVal=" + exitVal);
 
         killTopology(benchmarkConfig);
     }
@@ -139,12 +154,12 @@ public class BenchmarkRunner {
         Thread t = new Thread(new StreamRedirect(proc.getInputStream()));
         t.start();
 
-        System.out.println("Killing topology: " + topologyName);
+        LOG.info("Killing topology: " + topologyName);
         int exitVal = proc.waitFor();
-        System.out.println("exitVal=" + exitVal);
+        LOG.info("exitVal=" + exitVal);
 
         if (exitVal == 0) {
-            System.out.println("Waiting for topology to complete.");
+            LOG.info("Waiting for topology to complete.");
             Thread.sleep(5000);
         }
     }
@@ -174,13 +189,13 @@ public class BenchmarkRunner {
         @Override
         public void run() {
             try {
-                System.out.println("Running");
+                LOG.info("Running");
                 int i = -1;
                 while ((i = this.in.read()) != -1) {
                     System.out.write(i);
                 }
                 this.in.close();
-                System.out.println("Stream reader closed.");
+                LOG.info("Stream reader closed.");
             } catch (Exception e) {
                 e.printStackTrace();
             }
