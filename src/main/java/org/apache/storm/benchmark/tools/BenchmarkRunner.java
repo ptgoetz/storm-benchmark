@@ -69,6 +69,8 @@ public class BenchmarkRunner {
             System.exit(1);
         }
 
+
+
         String[] argArray = cmd.getArgs();
         runBenchmarks(cmd);
         LOG.info("Benchmark run complete.");
@@ -88,7 +90,18 @@ public class BenchmarkRunner {
         Map<String, Object> suiteConf = (Map) yaml.load(in);
         in.close();
 
-        ArrayList<Map<String, Object>> benchmarks = (ArrayList<Map<String, Object>>) suiteConf.get("benchmark-suite");
+        Map<String, Object> reportConfig = (Map<String, Object>)suiteConf.get("global");
+        if(cmd.hasOption("t")){
+            reportConfig.put("benchmark.runtime", Long.parseLong(cmd.getOptionValue("t")));
+        }
+        if(cmd.hasOption("P")){
+            reportConfig.put("benchmark.poll.interval", Long.parseLong(cmd.getOptionValue("P")));
+        }
+        if(cmd.hasOption("p")){
+            reportConfig.put("benchmark.report.dir", cmd.getOptionValue("p"));
+        }
+        ArrayList<Map<String, Object>> benchmarks = (ArrayList<Map<String, Object>>) suiteConf.get("benchmarks");
+
         LOG.info("Found " + benchmarks.size() + " benchmarks.");
         int benchmarkCount = 0;
         for (Map<String, Object> config : benchmarks) {
@@ -100,6 +113,7 @@ public class BenchmarkRunner {
         LOG.info("Running {} of {} benchmarks.", benchmarkCount, benchmarks.size());
         for (Map<String, Object> config : benchmarks) {
             if ((Boolean) config.get("benchmark.enabled") == true) {
+                config.putAll(reportConfig);
                 runTest((String) config.get("topology.class"), config);
             }
         }
