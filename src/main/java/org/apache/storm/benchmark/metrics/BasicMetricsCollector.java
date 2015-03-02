@@ -92,6 +92,9 @@ public class BasicMetricsCollector implements IMetricsCollector {
 
     @Override
     public void run() {
+        LOG.info(String.format("Waiting %s ms. for topology warm-up...", config.warmupDelay));
+        Utils.sleep(config.warmupDelay);
+
         Date date = new Date();
         SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
         long now = date.getTime();

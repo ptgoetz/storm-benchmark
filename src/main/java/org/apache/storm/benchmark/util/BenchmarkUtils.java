@@ -64,6 +64,19 @@ public final class BenchmarkUtils {
         return Utils.getInt(Utils.get(map, key, def));
     }
 
+    public static long getLong(Map map, Object key, long def) {
+        Object obj = map.get(key);
+        long retval = 0;
+        if(obj instanceof Long){
+            return (Long)obj;
+        }
+        if(obj != null) {
+            retval = Long.parseLong((String) (map.get(key)));
+        }
+        return retval;
+    }
+
+
     public static boolean ifAckEnabled(Config config) {
         Object ackers = config.get(Config.TOPOLOGY_ACKER_EXECUTORS);
         if (null == ackers) {

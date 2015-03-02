@@ -44,6 +44,8 @@ public class MetricsCollectorConfig {
     public final int totalTime;
     // metrics file path
     public final String path;
+    // warmup delay in milliseconds
+    public static Long warmupDelay = 0L;
 
     public MetricsCollectorConfig(Config stormConfig) {
         this.stormConfig = stormConfig;
@@ -55,6 +57,8 @@ public class MetricsCollectorConfig {
             labelStr = this.name;
         }
         this.label = labelStr;
+
+        this.warmupDelay = BenchmarkUtils.getLong(stormConfig, "benchmark.warmup.time", 0);
 
         pollInterval = BenchmarkUtils.getInt(
                 stormConfig, BenchmarkConstants.METRICS_POLL_INTERVAL, BenchmarkConstants.DEFAULT_POLL_INTERVAL);
