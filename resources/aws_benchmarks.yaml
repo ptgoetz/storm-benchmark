@@ -1,16 +1,28 @@
-benchmark-suite:
+# global report config
+global:
+
+  # command line equivalent: -P 60000 -t 300000 -p /Users/tgoetz
+  benchmark.poll.interval: 60000
+  benchmark.runtime: 300000
+  benchmark.report.dir: /Users/tgoetz/tmp
+
+  # TODO how long should we allow a topology to warm up before we start sampling?
+  # benchmark.warmup.time:
 
 
-# This is the one with the best throughput vs. latency
-# but AWS performance varies wildly. Throughput stays roughly the same,
-# but latency is pretty variable.
+benchmarks:
+
+
+  # This is the one with the best throughput vs. latency
+  # but AWS performance varies wildly. Throughput stays roughly the same,
+  # but latency is pretty variable.
   - benchmark.enabled: true
     benchmark.label: "trident-wordcount2"
     topology.class: org.apache.storm.benchmark.topologies.TridentFileReadWordCount
 
-    benchmark.poll.interval: 60000
-    benchmark.runtime: 300000
-    benchmark.report.dir: /Users/tgoetz/tmp
+#    benchmark.poll.interval: 60000
+#    benchmark.runtime: 300000
+#    benchmark.report.dir: /Users/tgoetz/tmp
 
     topology.config:
       #storm config params
@@ -25,15 +37,15 @@ benchmark-suite:
       component.count_bolt_num: 46
 
 
-# Increasing workers per node does not always improve performance.
-# Here performance will be roughly the same as with 3 workers (one per node)
+  # Increasing workers per node does not always improve performance.
+  # Here performance will be roughly the same as with 3 workers (one per node)
   - benchmark.enabled: false
     benchmark.label: "trident-wordcount3-6-workers"
     topology.class: org.apache.storm.benchmark.topologies.TridentFileReadWordCount
 
-    benchmark.poll.interval: 60000
-    benchmark.runtime: 300000
-    benchmark.report.dir: /Users/tgoetz/tmp
+#    benchmark.poll.interval: 60000
+#    benchmark.runtime: 300000
+#    benchmark.report.dir: /Users/tgoetz/tmp
 
     topology.config:
       #storm config params
@@ -55,9 +67,9 @@ benchmark-suite:
   - benchmark.enabled: true
     benchmark.label: "core-wordcount2"
     topology.class: org.apache.storm.benchmark.topologies.FileReadWordCount
-    benchmark.poll.interval: 60000
-    benchmark.runtime: 300000
-    benchmark.report.dir: /Users/tgoetz/tmp
+#    benchmark.poll.interval: 60000
+#    benchmark.runtime: 300000
+#    benchmark.report.dir: /Users/tgoetz/tmp
 
     topology.config:
       #storm config params
@@ -78,9 +90,9 @@ benchmark-suite:
   - benchmark.enabled: false
     benchmark.label: "core-wordcount"
     topology.class: org.apache.storm.benchmark.topologies.FileReadWordCount
-    benchmark.poll.interval: 60000
-    benchmark.runtime: 300000
-    benchmark.report.dir: /Users/tgoetz/tmp
+#    benchmark.poll.interval: 60000
+#    benchmark.runtime: 300000
+#    benchmark.report.dir: /Users/tgoetz/tmp
 
     topology.config:
       #storm config params
