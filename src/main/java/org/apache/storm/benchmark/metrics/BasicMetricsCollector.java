@@ -92,8 +92,11 @@ public class BasicMetricsCollector implements IMetricsCollector {
 
     @Override
     public void run() {
+
+        Nimbus.Client client = getNimbusClient(config.stormConfig);
         LOG.info(String.format("Waiting %s ms. for topology warm-up...", config.warmupDelay));
         Utils.sleep(config.warmupDelay);
+        boolean first = true;
 
         Date date = new Date();
         SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
@@ -117,9 +120,12 @@ public class BasicMetricsCollector implements IMetricsCollector {
         try {
             boolean live = true;
             do {
-                Utils.sleep(config.pollInterval);
+                if(!first) {
+                    Utils.sleep(config.pollInterval);
+                }
                 now = System.currentTimeMillis();
-                live = pollNimbus(getNimbusClient(config.stormConfig), now, state, dataWriter);
+                live = pollNimbus(client, state, dataWriter, first);
+                first = false;
             } while (live && now < endTime);
         } catch (Exception e) {
             LOG.error("storm metrics failed! ", e);
@@ -134,9 +140,17 @@ public class BasicMetricsCollector implements IMetricsCollector {
     }
 
 
-    boolean pollNimbus(Nimbus.Client client, long now, MetricsState state, PrintWriter writer)
+    boolean pollNimbus(Nimbus.Client client, MetricsState state, PrintWriter writer, boolean first)
             throws Exception {
+        long start = System.currentTimeMillis();
         ClusterSummary cs = client.getClusterInfo();
+        final String name = config.name;
+        TopologySummary ts = MetricsUtils.getTopologySummary(cs, name);
+        TopologyInfo info = client.getTopologyInfo(ts.get_id());
+        long end = System.currentTimeMillis();
+        LOG.info(String.format("Polling nimbus took %s ms.",(end - start)));
+        long now = System.currentTimeMillis();
+
         if (null == cs) {
             LOG.error("ClusterSummary not found");
             return false;
@@ -146,8 +160,7 @@ public class BasicMetricsCollector implements IMetricsCollector {
             updateSupervisorStats(cs);
         }
 
-        final String name = config.name;
-        TopologySummary ts = MetricsUtils.getTopologySummary(cs, name);
+
         if (null == ts) {
             LOG.error("TopologySummary not found for " + name);
             return false;
@@ -158,11 +171,12 @@ public class BasicMetricsCollector implements IMetricsCollector {
         }
 
         if (collectExecutorStats) {
-            TopologyInfo info = client.getTopologyInfo(ts.get_id());
+
             updateExecutorStats(info, state, now);
         }
-
-        writeLine(writer);
+        if(!first) {
+            writeLine(writer);
+        }
         state.lastTime = now;
 
         return true;
