@@ -26,6 +26,31 @@ public class MetricsSample {
 
     private long spoutEmitted = 0l;
     private long spoutTransferred = 0l;
+    private int spoutExecutors = 0;
+
+    private int numSupervisors = 0;
+    private int numWorkers = 0;
+    private int numTasks = 0;
+    private int numExecutors = 0;
+
+    private int totalSlots = 0;
+    private int usedSlots = 0;
+
+    public int getSpoutExecutors(){
+        return this.spoutExecutors;
+    }
+
+    public int getNumExecutors() {
+        return this.numExecutors;
+    }
+
+
+    public int getUsedSlots() {
+       return this.usedSlots;
+    }
+
+
+
 
     public static void main(String[] args) throws Exception {
         MetricsSample.factory("trident-wordcount");
@@ -215,6 +240,22 @@ public class MetricsSample {
 
     public long getSpoutTransferred() {
         return spoutTransferred;
+    }
+
+    public int getNumSupervisors() {
+        return numSupervisors;
+    }
+
+    public int getNumWorkers() {
+        return numWorkers;
+    }
+
+    public int getNumTasks() {
+        return numTasks;
+    }
+
+    public int getTotalSlots() {
+        return totalSlots;
     }
 
 }

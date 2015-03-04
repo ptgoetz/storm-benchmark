@@ -19,14 +19,14 @@
 package org.apache.storm.benchmark.metrics;
 
 import backtype.storm.Config;
-import backtype.storm.generated.*;
+import backtype.storm.generated.Nimbus;
+import backtype.storm.generated.StormTopology;
 import backtype.storm.utils.NimbusClient;
 import backtype.storm.utils.Utils;
 import org.apache.log4j.Logger;
 import org.apache.storm.benchmark.lib.spout.RandomMessageSpout;
 import org.apache.storm.benchmark.util.BenchmarkUtils;
 import org.apache.storm.benchmark.util.FileUtils;
-import org.apache.storm.benchmark.util.MetricsUtils;
 
 import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
@@ -57,13 +57,9 @@ public class BasicMetricsCollector implements IMetricsCollector {
     public static final String SPOUT_AVG_LATENCY_FORMAT = "%.1f";
     public static final String SPOUT_MAX_COMPLETE_LATENCY = "spout_max_complete_latency(ms)";
     public static final String SPOUT_MAX_LATENCY_FORMAT = "%.1f";
-    public static final String ALL_TIME = ":all-time";
-    public static final String LAST_TEN_MINS = "600";
-    public static final String LAST_THREE_HOURS = "10800";
-    public static final String LAST_DAY = "86400";
     private static final Logger LOG = Logger.getLogger(BasicMetricsCollector.class);
     final MetricsCollectorConfig config;
-    final StormTopology topology;
+//    final StormTopology topology;
     final Set<String> header = new LinkedHashSet<String>();
     final Map<String, String> metrics = new HashMap<String, String>();
     final int msgSize;
@@ -75,9 +71,13 @@ public class BasicMetricsCollector implements IMetricsCollector {
     final boolean collectSpoutThroughput;
     final boolean collectSpoutLatency;
 
+    private MetricsSample lastSample;
+    private MetricsSample curSample;
+    private double maxLatency = 0;
+
     public BasicMetricsCollector(Config stormConfig, StormTopology topology, Set<MetricsItem> items) {
         this.config = new MetricsCollectorConfig(stormConfig);
-        this.topology = topology;
+//        this.topology = topology;
         collectSupervisorStats = collectSupervisorStats(items);
         collectTopologyStats = collectTopologyStats(items);
         collectExecutorStats = collectExecutorStats(items);
@@ -92,17 +92,10 @@ public class BasicMetricsCollector implements IMetricsCollector {
 
     @Override
     public void run() {
-
-
-
         LOG.info(String.format("Waiting %s ms. for topology warm-up...", config.warmupDelay));
         Utils.sleep(config.warmupDelay);
 
-
         Nimbus.Client client = getNimbusClient(config.stormConfig);
-
-
-
 
         boolean first = true;
 
@@ -126,19 +119,19 @@ public class BasicMetricsCollector implements IMetricsCollector {
         writeHeader(dataWriter);
 
         try {
-            boolean live = true;
             do {
                 if(!first) {
                     Utils.sleep(config.pollInterval);
+                    this.lastSample = this.curSample;
+                    this.curSample = MetricsSample.factory(client, config.name);
+                    pollNimbus(state, dataWriter);
+                } else {
+                    this.curSample = MetricsSample.factory(client, config.name);
+                    first = false;
                 }
-                /////////////
-                MetricsSample sample = MetricsSample.factory(client, config.name);
-                LOG.info("Total latency: " + sample.getTotalLatency());
-                /////////////////
                 now = System.currentTimeMillis();
-                live = pollNimbus(client, state, dataWriter, first);
-                first = false;
-            } while (live && now < endTime);
+
+            } while (now < endTime);
         } catch (Exception e) {
             LOG.error("storm metrics failed! ", e);
         } finally {
@@ -152,152 +145,67 @@ public class BasicMetricsCollector implements IMetricsCollector {
     }
 
 
-    boolean pollNimbus(Nimbus.Client client, MetricsState state, PrintWriter writer, boolean first)
+    boolean pollNimbus(MetricsState state, PrintWriter writer)
             throws Exception {
-        long start = System.currentTimeMillis();
-        ClusterSummary cs = client.getClusterInfo();
         final String name = config.name;
-        TopologySummary ts = MetricsUtils.getTopologySummary(cs, name);
-        TopologyInfo info = client.getTopologyInfo(ts.get_id());
-        long end = System.currentTimeMillis();
-        LOG.info(String.format("Polling nimbus took %s ms.",(end - start)));
-        long now = System.currentTimeMillis();
-
-        if (null == cs) {
-            LOG.error("ClusterSummary not found");
-            return false;
-        }
 
         if (collectSupervisorStats) {
-            updateSupervisorStats(cs);
-        }
-
-
-        if (null == ts) {
-            LOG.error("TopologySummary not found for " + name);
-            return false;
+            updateSupervisorStats();
         }
 
         if (collectTopologyStats) {
-            updateTopologyStats(ts, state, now);
+            updateTopologyStats(state);
         }
 
         if (collectExecutorStats) {
+            updateExecutorStats(state);
+        }
 
-            updateExecutorStats(info, state, now);
-        }
-        if(!first) {
-            writeLine(writer);
-        }
-        state.lastTime = now;
+        writeLine(writer);
+        state.lastTime = System.currentTimeMillis();
 
         return true;
     }
 
-    void updateTopologyStats(TopologySummary ts, MetricsState state, long now) {
-        long timeTotal = now - state.startTime;
-        int numWorkers = ts.get_num_workers();
-        int numExecutors = ts.get_num_executors();
-        int numTasks = ts.get_num_tasks();
+    void updateTopologyStats(MetricsState state) {
+        long timeTotal = this.curSample.getSampleTime() - state.startTime;
+        int numWorkers = this.curSample.getNumWorkers();
+        int numExecutors = this.curSample.getNumExecutors();
+        int numTasks = this.curSample.getNumTasks();
         metrics.put(TIME, String.format(TIME_FORMAT, timeTotal / 1000));
         metrics.put(WORKERS, Integer.toString(numWorkers));
         metrics.put(EXECUTORS, Integer.toString(numExecutors));
         metrics.put(TASKS, Integer.toString(numTasks));
     }
 
-    void updateSupervisorStats(ClusterSummary cs) {
-        int totalSlots = 0;
-        int usedSlots = 0;
-        for (SupervisorSummary ss : cs.get_supervisors()) {
-            totalSlots += ss.get_num_workers();
-            usedSlots += ss.get_num_used_workers();
-        }
-        metrics.put(TOTAL_SLOTS, Integer.toString(totalSlots));
-        metrics.put(USED_SLOTS, Integer.toString(usedSlots));
+    void updateSupervisorStats() {
+        metrics.put(TOTAL_SLOTS, Integer.toString(this.curSample.getTotalSlots()));
+        metrics.put(USED_SLOTS, Integer.toString(this.curSample.getUsedSlots()));
     }
 
-    void updateExecutorStats(TopologyInfo info, MetricsState state, long now) {
-        long overallTransferred = 0;
-        long spoutTransferred = 0;
-        long spoutAcked = 0;
-        int spoutExecutors = 0;
+    void updateExecutorStats(MetricsState state) {
+        long timeDiff = this.curSample.getSampleTime() - this.lastSample.getSampleTime();
+        long transferredDiff = this.curSample.getTotalTransferred() - this.lastSample.getTotalTransferred();
+        long throughput = transferredDiff / (timeDiff / 1000);
+        double throughputMB = (throughput * msgSize) / 1024;
 
-        Map<String, List<Double>> comLat = new HashMap<String, List<Double>>();
-        for (ExecutorSummary es : info.get_executors()) {
-            String id = es.get_component_id();
-            LOG.debug("get ExecutorSummary of component: " + id);
-            if (Utils.isSystemId(id)) {
-                LOG.debug("skip system component: " + id);
-                continue;
-            }
-            ExecutorStats exeStats = es.get_stats();
-            if (exeStats != null) {
-                ExecutorSpecificStats specs = exeStats.get_specific();
-                ComponentCommon common = Utils.getComponentCommon(topology, id);
-                boolean isSpout = isSpout(specs);
-                if (isSpout) {
-                    spoutExecutors++;
-                }
-                for (String stream : common.get_streams().keySet()) {
-                    LOG.debug("get stream " + stream + " of component: " + id);
-                    long transferred = MetricsUtils.getTransferred(exeStats, ALL_TIME, stream);
-                    LOG.debug(String.format("%s transferred %d messages in stream %s during window %s",
-                            id, transferred, stream, ALL_TIME));
-                    overallTransferred += transferred;
-                    if (isSpout) {
-                        if (isDefaultStream(stream) || isBatchStream(stream)) {
-                            spoutTransferred += transferred;
-                            SpoutStats spStats = specs.get_spout();
-                            spoutAcked += MetricsUtils.getSpoutAcked(spStats, ALL_TIME, stream);
+        long spoutDiff = this.curSample.getSpoutTransferred() - this.lastSample.getSpoutTransferred();
+        long spoutAckedDiff = this.curSample.getTotalAcked() - this.lastSample.getTotalAcked();
+        long spoutThroughput = spoutDiff / (timeDiff / 1000);
+        double spoutThroughputMB = (spoutThroughput * msgSize) / 1024;
 
-                            double lat = MetricsUtils.getSpoutCompleteLatency(spStats, ALL_TIME, stream);
-                            LOG.debug(String.format("spout %s complete latency in stream %s during window %s", id, stream, ALL_TIME));
-                            MetricsUtils.addLatency(comLat, id, lat);
-                        } else {
-                            LOG.debug("skip non-default and non-batch stream: " + stream
-                                    + " of spout: " + id);
-                        }
-                    }
-                }
-            } else {
-                LOG.warn("executor stats not found for component: " + id);
-            }
-        }
-        if (collectSpoutLatency) {
-            if (comLat.isEmpty()) {
-                metrics.put(SPOUT_AVG_COMPLETE_LATENCY, "0.0");
-                metrics.put(SPOUT_MAX_COMPLETE_LATENCY, "0.0");
-            }
-            for (String id : comLat.keySet()) {
-                List<Double> latList = comLat.get(id);
-                double avg = null == latList ? 0.0 : BenchmarkUtils.avg(latList);
-                double max = null == latList ? 0.0 : BenchmarkUtils.max(latList);
-                metrics.put(SPOUT_AVG_COMPLETE_LATENCY,
-                        String.format(SPOUT_AVG_LATENCY_FORMAT, avg));
-                metrics.put(SPOUT_MAX_COMPLETE_LATENCY,
-                        String.format(SPOUT_MAX_LATENCY_FORMAT, max));
-
-            }
-        }
-
-        long timeDiff = now - state.lastTime;
-        long overallDiff = overallTransferred - state.overallTransferred;
-        long spoutDiff = spoutTransferred - state.spoutTransferred;
-        long throughput = (long) MetricsUtils.getThroughput(overallDiff, timeDiff);
-        double throughputMB = (long) MetricsUtils.getThroughputMB(overallDiff, timeDiff, msgSize);
-        long spoutThroughput = (long) MetricsUtils.getThroughput(spoutDiff, timeDiff);
-        double spoutThroughputMB = (long) MetricsUtils.getThroughputMB(spoutDiff, timeDiff, msgSize);
         if (collectThroughput) {
-            metrics.put(TRANSFERRED, Long.toString(overallDiff));
+            metrics.put(TRANSFERRED, Long.toString(transferredDiff));
             metrics.put(THROUGHPUT, Long.toString(throughput));
         }
         if (collectThroughputMB) {
             metrics.put(THROUGHPUT_MB, String.format(THROUGHPUT_MB_FORMAT, throughputMB));
         }
         if (collectSpoutThroughput) {
-            metrics.put(SPOUT_EXECUTORS, Integer.toString(spoutExecutors));
+
+            metrics.put(SPOUT_EXECUTORS, Integer.toString(this.curSample.getSpoutExecutors()));
             metrics.put(SPOUT_TRANSFERRED, Long.toString(spoutDiff));
-            metrics.put(SPOUT_ACKED, Long.toString(spoutAcked));
+            metrics.put(SPOUT_ACKED, Long.toString(spoutAckedDiff));
             metrics.put(SPOUT_THROUGHPUT, Long.toString(spoutThroughput));
         }
         if (collectThroughputMB) {
@@ -306,22 +214,21 @@ public class BasicMetricsCollector implements IMetricsCollector {
 
         }
 
-        state.overallTransferred = overallTransferred;
-        state.spoutTransferred = spoutTransferred;
+
+        if (collectSpoutLatency) {
+            double latency = this.curSample.getTotalLatency();
+            if(latency > this.maxLatency){
+                this.maxLatency = latency;
+            }
+            metrics.put(SPOUT_AVG_COMPLETE_LATENCY,
+                    String.format(SPOUT_AVG_LATENCY_FORMAT, latency));
+            metrics.put(SPOUT_MAX_COMPLETE_LATENCY,
+                    String.format(SPOUT_MAX_LATENCY_FORMAT, this.maxLatency));
+
+        }
     }
 
 
-    boolean isSpout(ExecutorSpecificStats specs) {
-        return specs != null && specs.is_set_spout();
-    }
-
-    boolean isDefaultStream(String stream) {
-        return stream.equals(Utils.DEFAULT_STREAM_ID);
-    }
-
-    boolean isBatchStream(String stream) {
-        return stream.equals("$batch");
-    }
 
 
     void writeHeader(PrintWriter writer) {
@@ -420,8 +327,8 @@ public class BasicMetricsCollector implements IMetricsCollector {
 
 
     static class MetricsState {
-        long overallTransferred = 0;
-        long spoutTransferred = 0;
+//        long overallTransferred = 0;
+//        long spoutTransferred = 0;
         long startTime = 0;
         long lastTime = 0;
     }
