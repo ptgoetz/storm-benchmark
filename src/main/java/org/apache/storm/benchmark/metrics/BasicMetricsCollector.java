@@ -103,9 +103,6 @@ public class BasicMetricsCollector implements IMetricsCollector {
         SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
         long now = date.getTime();
         long endTime = now + config.totalTime;
-        MetricsState state = new MetricsState();
-        state.startTime = now;
-        state.lastTime = now;
 
         final String path = config.path;
         final String name = config.label;
@@ -124,7 +121,7 @@ public class BasicMetricsCollector implements IMetricsCollector {
                     Utils.sleep(config.pollInterval);
                     this.lastSample = this.curSample;
                     this.curSample = MetricsSample.factory(client, config.name);
-                    pollNimbus(state, dataWriter);
+                    updateStats(dataWriter);
                 } else {
                     LOG.info("Getting baseline metrics sample.");
                     this.curSample = MetricsSample.factory(client, config.name);
@@ -145,31 +142,25 @@ public class BasicMetricsCollector implements IMetricsCollector {
         return NimbusClient.getConfiguredClient(stormConfig).getClient();
     }
 
-
-    boolean pollNimbus(MetricsState state, PrintWriter writer)
+    boolean updateStats(PrintWriter writer)
             throws Exception {
         final String name = config.name;
 
         if (collectSupervisorStats) {
             updateSupervisorStats();
         }
-
         if (collectTopologyStats) {
-            updateTopologyStats(state);
+            updateTopologyStats();
         }
-
         if (collectExecutorStats) {
-            updateExecutorStats(state);
+            updateExecutorStats();
         }
-
         writeLine(writer);
-        state.lastTime = System.currentTimeMillis();
-
         return true;
     }
 
-    void updateTopologyStats(MetricsState state) {
-        long timeTotal = this.curSample.getSampleTime() - state.startTime;
+    void updateTopologyStats() {
+        long timeTotal = this.curSample.getSampleTime() - this.lastSample.getSampleTime();
         int numWorkers = this.curSample.getNumWorkers();
         int numExecutors = this.curSample.getNumExecutors();
         int numTasks = this.curSample.getNumTasks();
@@ -184,7 +175,7 @@ public class BasicMetricsCollector implements IMetricsCollector {
         metrics.put(USED_SLOTS, Integer.toString(this.curSample.getUsedSlots()));
     }
 
-    void updateExecutorStats(MetricsState state) {
+    void updateExecutorStats() {
         long timeDiff = this.curSample.getSampleTime() - this.lastSample.getSampleTime();
         long transferredDiff = this.curSample.getTotalTransferred() - this.lastSample.getTotalTransferred();
         long throughput = transferredDiff / (timeDiff / 1000);
@@ -228,8 +219,6 @@ public class BasicMetricsCollector implements IMetricsCollector {
 
         }
     }
-
-
 
 
     void writeHeader(PrintWriter writer) {
@@ -324,13 +313,5 @@ public class BasicMetricsCollector implements IMetricsCollector {
     boolean collectSpoutLatency(Set<MetricsItem> items) {
         return items.contains(MetricsItem.ALL) ||
                 items.contains(MetricsItem.SPOUT_LATENCY);
-    }
-
-
-    static class MetricsState {
-//        long overallTransferred = 0;
-//        long spoutTransferred = 0;
-        long startTime = 0;
-        long lastTime = 0;
     }
 }
