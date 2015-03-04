@@ -52,7 +52,7 @@ public class BasicMetricsCollector implements IMetricsCollector {
     public static final String SPOUT_ACKED = "spout_acked (messages)";
     public static final String SPOUT_THROUGHPUT = "spout_throughput (messages/s)";
     public static final String SPOUT_THROUGHPUT_MB = "spout_throughput (MB/s)";
-    public static final String SPOUT_THROUGHPUT_MB_FORMAT = "%.3f";
+    public static final String SPOUT_THROUGHPUT_MB_FORMAT = "%.1f";
     public static final String SPOUT_AVG_COMPLETE_LATENCY = "spout_avg_complete_latency(ms)";
     public static final String SPOUT_AVG_LATENCY_FORMAT = "%.1f";
     public static final String SPOUT_MAX_COMPLETE_LATENCY = "spout_max_complete_latency(ms)";
@@ -188,12 +188,12 @@ public class BasicMetricsCollector implements IMetricsCollector {
         long timeDiff = this.curSample.getSampleTime() - this.lastSample.getSampleTime();
         long transferredDiff = this.curSample.getTotalTransferred() - this.lastSample.getTotalTransferred();
         long throughput = transferredDiff / (timeDiff / 1000);
-        double throughputMB = (throughput * msgSize) / 1024;
+        double throughputMB = (throughput * msgSize) / (1024 * 1024);
 
         long spoutDiff = this.curSample.getSpoutTransferred() - this.lastSample.getSpoutTransferred();
         long spoutAckedDiff = this.curSample.getTotalAcked() - this.lastSample.getTotalAcked();
         long spoutThroughput = spoutDiff / (timeDiff / 1000);
-        double spoutThroughputMB = (spoutThroughput * msgSize) / 1024;
+        double spoutThroughputMB = (spoutThroughput * msgSize) / (1024 * 1024);
 
         if (collectThroughput) {
             metrics.put(TRANSFERRED, Long.toString(transferredDiff));
