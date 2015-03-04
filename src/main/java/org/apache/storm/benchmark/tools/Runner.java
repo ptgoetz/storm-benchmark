@@ -82,6 +82,16 @@ public class Runner {
         }
 
         config.putAll(Utils.readCommandLineOpts());
+
+        if(!config.containsKey("nimbus.thrift.port")){
+            config.put("nimbus.thrift.port", 6627);
+        }
+        if(!config.containsKey("storm.messaging.transport")){
+            config.put("storm.messaging.transport", "backtype.storm.messaging.netty.Context");
+        }
+        if(!config.containsKey("storm.thrift.transport")){
+            config.put("storm.thrift.transport", "backtype.storm.security.auth.SimpleTransportPlugin");
+        }
     }
 
     public static IApplication getApplicationFromName(String name)
