@@ -64,7 +64,7 @@ public class BenchmarkRunner {
         CommandLineParser parser = new BasicParser();
         CommandLine cmd = parser.parse(options, args);
 
-        if (cmd.getArgs().length != 1) {
+        if (cmd.getArgs().length != 2) {
             usage(options);
             System.exit(1);
         }
@@ -78,14 +78,14 @@ public class BenchmarkRunner {
 
     private static void usage(Options options) {
         HelpFormatter formatter = new HelpFormatter();
-        formatter.printHelp("storm-benchmark [options] <benchmark file>", options);
+        formatter.printHelp("storm-benchmark [options] <benchmark_jar> <benchmark_config>", options);
     }
 
 
     public static void runBenchmarks(CommandLine cmd) throws Exception {
         Yaml yaml = new Yaml();
 
-        FileInputStream in = new FileInputStream((String) cmd.getArgList().get(0));
+        FileInputStream in = new FileInputStream((String) cmd.getArgList().get(1));
 
         Map<String, Object> suiteConf = (Map) yaml.load(in);
         in.close();
@@ -114,17 +114,16 @@ public class BenchmarkRunner {
         for (Map<String, Object> config : benchmarks) {
             if ((Boolean) config.get("benchmark.enabled") == true) {
                 config.putAll(reportConfig);
-                runTest((String) config.get("topology.class"), config);
+                runTest((String) config.get("topology.class"), config, (String)cmd.getArgList().get(0));
             }
         }
     }
 
-    private static void runTest(String topologyClass, Map<String, Object> benchmarkConfig) throws Exception {
+    private static void runTest(String topologyClass, Map<String, Object> benchmarkConfig, String jarFile) throws Exception {
         ArrayList<String> command = new ArrayList<String>();
         command.add("storm");
         command.add("jar");
-        //FIXME NOW!!!!!!!
-        command.add("target/storm-benchmark-0.1.0-jar-with-dependencies.jar");
+        command.add(jarFile);
         command.add("org.apache.storm.benchmark.tools.Runner");
         command.add(topologyClass);
         addBenchmarkCommandOpts(command, benchmarkConfig);
