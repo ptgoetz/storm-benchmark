@@ -75,7 +75,7 @@ public class BasicMetricsCollector implements IMetricsCollector {
     private MetricsSample curSample;
     private double maxLatency = 0;
 
-    public BasicMetricsCollector(Config stormConfig, StormTopology topology, Set<MetricsItem> items) {
+    public BasicMetricsCollector(Config stormConfig, Set<MetricsItem> items) {
         this.config = new MetricsCollectorConfig(stormConfig);
 //        this.topology = topology;
         collectSupervisorStats = collectSupervisorStats(items);
@@ -126,6 +126,7 @@ public class BasicMetricsCollector implements IMetricsCollector {
                     this.curSample = MetricsSample.factory(client, config.name);
                     pollNimbus(state, dataWriter);
                 } else {
+                    LOG.info("Getting baseline metrics sample.");
                     this.curSample = MetricsSample.factory(client, config.name);
                     first = false;
                 }

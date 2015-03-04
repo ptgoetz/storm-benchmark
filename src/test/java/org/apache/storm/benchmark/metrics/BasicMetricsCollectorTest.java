@@ -44,7 +44,7 @@ public class BasicMetricsCollectorTest {
 
     @Test(dataProvider = "getSupervisorMetrics")
     public void testCollectSupervisorStats(Set<IMetricsCollector.MetricsItem> items, boolean expected) {
-        BasicMetricsCollector collector = new BasicMetricsCollector(config, topology, items);
+        BasicMetricsCollector collector = new BasicMetricsCollector(config, items);
         assertThat(collector.collectSupervisorStats).isEqualTo(expected);
     }
 
@@ -63,7 +63,7 @@ public class BasicMetricsCollectorTest {
 
     @Test(dataProvider = "getTopologyMetrics")
     public void testCollectTopologyStats(Set<IMetricsCollector.MetricsItem> items, boolean expected) {
-        BasicMetricsCollector collector = new BasicMetricsCollector(config, topology, items);
+        BasicMetricsCollector collector = new BasicMetricsCollector(config, items);
         assertThat(collector.collectTopologyStats).isEqualTo(expected);
     }
 
@@ -82,7 +82,7 @@ public class BasicMetricsCollectorTest {
 
     @Test(dataProvider = "getExecutorMetrics")
     public void testCollectExecutorStats(Set<IMetricsCollector.MetricsItem> items, boolean expected) {
-        BasicMetricsCollector collector = new BasicMetricsCollector(config, topology, items);
+        BasicMetricsCollector collector = new BasicMetricsCollector(config, items);
         assertThat(collector.collectExecutorStats).isEqualTo(expected);
     }
 
@@ -100,7 +100,7 @@ public class BasicMetricsCollectorTest {
 
     @Test(dataProvider = "getThroughputMetrics")
     public void testCollectThroughput(Set<IMetricsCollector.MetricsItem> items, boolean expected) {
-        BasicMetricsCollector collector = new BasicMetricsCollector(config, topology, items);
+        BasicMetricsCollector collector = new BasicMetricsCollector(config, items);
         assertThat(collector.collectThroughput).isEqualTo(expected);
     }
 
@@ -119,7 +119,7 @@ public class BasicMetricsCollectorTest {
 
     @Test(dataProvider = "getThroughputMBMetrics")
     public void testCollectThroughputMB(Set<IMetricsCollector.MetricsItem> items, boolean expected) {
-        BasicMetricsCollector collector = new BasicMetricsCollector(config, topology, items);
+        BasicMetricsCollector collector = new BasicMetricsCollector(config, items);
         assertThat(collector.collectThroughputMB).isEqualTo(expected);
     }
 
@@ -138,7 +138,7 @@ public class BasicMetricsCollectorTest {
 
     @Test(dataProvider = "getSpoutThroughputMetrics")
     public void testCollectSpoutThroughput(Set<IMetricsCollector.MetricsItem> items, boolean expected) {
-        BasicMetricsCollector collector = new BasicMetricsCollector(config, topology, items);
+        BasicMetricsCollector collector = new BasicMetricsCollector(config, items);
         assertThat(collector.collectSpoutThroughput).isEqualTo(expected);
     }
 
@@ -157,7 +157,7 @@ public class BasicMetricsCollectorTest {
 
     @Test(dataProvider = "getSpoutLatencyMetrics")
     public void testCollectSpoutLatency(Set<IMetricsCollector.MetricsItem> items, boolean expected) {
-        BasicMetricsCollector collector = new BasicMetricsCollector(config, topology, items);
+        BasicMetricsCollector collector = new BasicMetricsCollector(config, items);
         assertThat(collector.collectSpoutLatency).isEqualTo(expected);
     }
 
@@ -178,7 +178,7 @@ public class BasicMetricsCollectorTest {
 
     @Test(dataProvider = "getMetricsItems")
     public void testWriteHeaders(Set<IMetricsCollector.MetricsItem> items, Set<String> expected) {
-        BasicMetricsCollector collector = new BasicMetricsCollector(config, topology, items);
+        BasicMetricsCollector collector = new BasicMetricsCollector(config, items);
         PrintWriter writer = mock(PrintWriter.class);
 
         collector.writeHeader(writer);

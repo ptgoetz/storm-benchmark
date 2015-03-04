@@ -158,7 +158,7 @@ public class DRPC extends StormBenchmark {
     }
 
     @Override
-    public IMetricsCollector getMetricsCollector(Config config, StormTopology topology) {
+    public IMetricsCollector getMetricsCollector(Config config) {
         return new DRPCMetricsCollector(config, FUNCTION, ARGS, server, port);
     }
 

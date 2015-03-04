@@ -93,7 +93,7 @@ public class Runner {
     public static void runBenchmark(IBenchmark benchmark)
             throws Exception {
         runApplication(benchmark);
-        IMetricsCollector collector = benchmark.getMetricsCollector(config, topology);
+        IMetricsCollector collector = benchmark.getMetricsCollector(config);
         collector.run();
     }
 

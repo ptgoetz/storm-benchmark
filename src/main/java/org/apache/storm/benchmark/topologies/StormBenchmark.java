@@ -36,7 +36,7 @@ public abstract class StormBenchmark extends Benchmark {
     private static final Logger LOG = Logger.getLogger(StormBenchmark.class);
 
     @Override
-    public IMetricsCollector getMetricsCollector(Config config, StormTopology topology) {
+    public IMetricsCollector getMetricsCollector(Config config) {
 
         Set<MetricsItem> items = Sets.newHashSet(
                 MetricsItem.SUPERVISOR_STATS,
@@ -45,7 +45,7 @@ public abstract class StormBenchmark extends Benchmark {
                 MetricsItem.SPOUT_THROUGHPUT,
                 MetricsItem.SPOUT_LATENCY
         );
-        return new BasicMetricsCollector(config, topology, items);
+        return new BasicMetricsCollector(config, items);
     }
 
 

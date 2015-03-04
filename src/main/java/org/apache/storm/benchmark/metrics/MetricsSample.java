@@ -36,49 +36,22 @@ public class MetricsSample {
     private int totalSlots = 0;
     private int usedSlots = 0;
 
-    public int getSpoutExecutors(){
-        return this.spoutExecutors;
-    }
-
-    public int getNumExecutors() {
-        return this.numExecutors;
-    }
-
-
-    public int getUsedSlots() {
-       return this.usedSlots;
-    }
-
-
-
-
-    public static void main(String[] args) throws Exception {
-        MetricsSample.factory("trident-wordcount");
-    }
-
-
-    // TODO temp hack
-    private static Nimbus.Client newClient(){
-        Config config = new Config();
-        config.put("nimbus.host", "nimbus");
-        config.put("nimbus.thrift.port", 6627);
-        config.put("storm.thrift.transport", "backtype.storm.security.auth.SimpleTransportPlugin");
-
-        Nimbus.Client client = NimbusClient.getConfiguredClient(config).getClient();
-        return client;
-    }
-
-    public static MetricsSample factory(String topologyName) throws Exception {
-        Nimbus.Client client = newClient();
-        return factory(client, topologyName);
-    }
-
-
     public static MetricsSample factory(Nimbus.Client client, String topologyName) throws Exception {
 
         ClusterSummary clusterSummary = client.getClusterInfo();
+        List<SupervisorSummary> supervisors = clusterSummary.get_supervisors();
+        int totalSlots = 0;
+        int usedSlots = 0;
+        for(SupervisorSummary supervisor : supervisors){
+            totalSlots += supervisor.get_num_workers();
+            usedSlots += supervisor.get_num_used_workers();
+        }
+        int freeSlots = totalSlots - usedSlots;
 
         TopologySummary topSummary = getTopologySummary(clusterSummary, topologyName);
+        int topologyExecutors = topSummary.get_num_executors();
+        int topologyWorkers = topSummary.get_num_workers();
+        int topologyTasks = topSummary.get_num_tasks();
         TopologyInfo topInfo = client.getTopologyInfo(topSummary.get_id());
 
         List<ExecutorSummary> executorSummaries = topInfo.get_executors();
@@ -89,7 +62,7 @@ public class MetricsSample {
         long totalAcked = 0l;
         long totalFailed = 0l;
 
-        // the number of spout executors
+        // number of spout executors
         int spoutExecCount = 0;
         double spoutLatencySum = 0.0;
 
@@ -98,11 +71,11 @@ public class MetricsSample {
 
         // Executor summaries
         for(ExecutorSummary executorSummary : executorSummaries){
-//            LOG.debug(String.format("\t%s:%s/%s", executorSummary.get_host(), executorSummary.get_port(), executorSummary.get_component_id()));
 
+
+            ExecutorStats execuatorStats = executorSummary.get_stats();
             // doesn't appear to return what you would expect...
             // seems more like # of tasks/executors
-            ExecutorStats execuatorStats = executorSummary.get_stats();
 //            LOG.debug(String.format("\t\temitted: %s, transferred: %s",
 //                    execuatorStats.get_emitted_size(),
 //                    execuatorStats.get_transferred_size()
@@ -114,7 +87,6 @@ public class MetricsSample {
             Map<String,Map<String,Long>> transferred = execuatorStats.get_transferred();
             Map<String, Long> txMap = transferred.get(":all-time");
             for(String key : txMap.keySet()){
-//                LOG.debug("Transferred: {} : {}", key, txMap.get(key));
                 if(!Utils.isSystemId(key)){
                     Long count = txMap.get(key);
                     totalTransferred += count;
@@ -170,16 +142,15 @@ public class MetricsSample {
 
             // we found a bolt
             if(executorSpecificStats.is_set_bolt()) {
-                //LOG.debug("\t\tbolt: " + executorSpecificStats.get_bolt());
-            }
 
+            }
 
         } // end executor summary
 
         LOG.info("====== RESULTS ======");
-        LOG.info("Total emitted is: {}", totalEmitted);
-        LOG.info("Total transferred is: {}", totalTransferred);
-        LOG.info("Total avg latency is: {}", spoutLatencySum / spoutExecCount);
+        LOG.info("Total emitted: {}", totalEmitted);
+        LOG.info("Total transferred: {}", totalTransferred);
+        LOG.info("Total avg latency: {}", spoutLatencySum / spoutExecCount);
         LOG.info("Spout emitted: {}", spoutEmitted);
         LOG.info("Spout transferred: {}", spoutTransferred);
         LOG.info("Total Acked: {}", totalAcked);
@@ -193,6 +164,13 @@ public class MetricsSample {
         ret.spoutEmitted = spoutEmitted;
         ret.spoutTransferred = spoutTransferred;
         ret.sampleTime = System.currentTimeMillis();
+        ret.numSupervisors = clusterSummary.get_supervisors_size();
+        ret.totalSlots = totalSlots;
+        ret.usedSlots = usedSlots;
+        ret.numWorkers = topologyWorkers;
+        ret.numExecutors = topologyExecutors;
+        ret.numTasks = topologyTasks;
+        ret.spoutExecutors = spoutExecCount;
         return ret;
 
 
@@ -256,6 +234,18 @@ public class MetricsSample {
 
     public int getTotalSlots() {
         return totalSlots;
+    }
+
+    public int getSpoutExecutors(){
+        return this.spoutExecutors;
+    }
+
+    public int getNumExecutors() {
+        return this.numExecutors;
+    }
+
+    public int getUsedSlots() {
+        return this.usedSlots;
     }
 
 }

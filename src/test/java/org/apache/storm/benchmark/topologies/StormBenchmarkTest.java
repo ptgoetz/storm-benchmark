@@ -36,7 +36,7 @@ public class StormBenchmarkTest {
     @Test(dataProvider = "getStormBenchmark")
     public void getMetricsCollectorShouldReturnProperCollector(
             StormBenchmark benchmark, Class collectorClass) {
-        IMetricsCollector collector = benchmark.getMetricsCollector(config, topology);
+        IMetricsCollector collector = benchmark.getMetricsCollector(config);
         assertThat(collector)
                 .isNotNull()
                 .isInstanceOf(collectorClass);

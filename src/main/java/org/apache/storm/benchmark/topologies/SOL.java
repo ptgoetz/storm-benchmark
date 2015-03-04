@@ -69,8 +69,8 @@ public class SOL extends StormBenchmark {
     }
 
     @Override
-    public IMetricsCollector getMetricsCollector(Config config, StormTopology topology) {
-        return new BasicMetricsCollector(config, topology,
+    public IMetricsCollector getMetricsCollector(Config config) {
+        return new BasicMetricsCollector(config,
                 Sets.newHashSet(IMetricsCollector.MetricsItem.ALL));
     }
 

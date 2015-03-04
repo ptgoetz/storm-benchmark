@@ -56,7 +56,7 @@ public class LocalRunner {
         localCluster.submitTopology(name, config, topology);
         final int runtime = BenchmarkUtils.getInt(config, METRICS_TOTAL_TIME,
                 DEFAULT_TOTAL_TIME);
-        IMetricsCollector collector = benchmark.getMetricsCollector(config, topology);
+        IMetricsCollector collector = benchmark.getMetricsCollector(config);
         collector.run();
         try {
             Thread.sleep(runtime);
