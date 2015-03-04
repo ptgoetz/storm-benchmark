@@ -93,9 +93,17 @@ public class BasicMetricsCollector implements IMetricsCollector {
     @Override
     public void run() {
 
-        Nimbus.Client client = getNimbusClient(config.stormConfig);
+
+
         LOG.info(String.format("Waiting %s ms. for topology warm-up...", config.warmupDelay));
         Utils.sleep(config.warmupDelay);
+
+
+        Nimbus.Client client = getNimbusClient(config.stormConfig);
+
+
+
+
         boolean first = true;
 
         Date date = new Date();
@@ -123,6 +131,10 @@ public class BasicMetricsCollector implements IMetricsCollector {
                 if(!first) {
                     Utils.sleep(config.pollInterval);
                 }
+                /////////////
+                MetricsSample sample = MetricsSample.factory(client, config.name);
+                LOG.info("Total latency: " + sample.getTotalLatency());
+                /////////////////
                 now = System.currentTimeMillis();
                 live = pollNimbus(client, state, dataWriter, first);
                 first = false;
