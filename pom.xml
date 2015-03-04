@@ -156,28 +156,6 @@
           </additionalClasspathElements>
         </configuration>
       </plugin>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>exec-maven-plugin</artifactId>
-        <version>1.2.1</version>
-        <executions>
-          <execution>
-            <goals>
-              <goal>exec</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <executable>java</executable>
-          <includeProjectDependencies>true</includeProjectDependencies>
-          <includePluginDependencies>false</includePluginDependencies>
-          <classpathScope>compile</classpathScope>
-          <mainClass>org.apache.storm.benchmark.tools.LocalRunner</mainClass>
-          <arguments>
-            <argument>${benchmark}</argument>
-          </arguments>
-        </configuration>
-      </plugin>
     </plugins>
   </build>
 </project>

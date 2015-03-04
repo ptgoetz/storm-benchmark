@@ -45,7 +45,7 @@ public class MetricsCollectorConfig {
     // metrics file path
     public final String path;
     // warmup delay in milliseconds
-    public static Long warmupDelay = 0L;
+    public static Long warmupDelay = 30000L;
 
     public MetricsCollectorConfig(Config stormConfig) {
         this.stormConfig = stormConfig;

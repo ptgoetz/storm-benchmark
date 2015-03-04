@@ -36,7 +36,6 @@ public class BenchmarkRunner {
 
     public static void main(String[] args) throws Exception {
 
-        // TODO actually do something with the options, for now they are ignored
         Options options = new Options();
 
         Option runTimeOpt = OptionBuilder.hasArgs(1)
