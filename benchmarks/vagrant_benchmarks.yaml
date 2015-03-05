@@ -1,0 +1,71 @@
+# global report config
+global:
+  benchmark.poll.interval: 60000
+  benchmark.runtime: 300000
+  benchmark.report.dir: /Users/tgoetz/tmp
+
+  # TODO how long should we allow a topology to warm up before we start sampling?
+  #benchmark.warmup.time: 100000
+
+
+benchmarks:
+  - benchmark.enabled: false
+    benchmark.label: "trident-wordcount"
+    topology.class: org.apache.storm.benchmark.topologies.TridentFileReadWordCount
+
+
+    topology.config:
+      # don't like putting this here
+      benchmark.warmup.time: 60000
+
+      #storm config params
+      topology.name: "trident-wordcount"
+      topology.acker.executors: 2
+      topology.max.spout.pending: 4
+      topology.workers: 2
+
+      # TridentFileReadWordCount config params
+      trident.spout.batch.size: 2000
+      component.spout_num: 4
+      component.count_bolt_num: 4
+
+  - benchmark.enabled: false
+    benchmark.label: "core-wordcount"
+    topology.class: org.apache.storm.benchmark.topologies.FileReadWordCount
+
+    topology.config:
+      #storm config params
+      topology.name: "core-wordcount"
+      topology.acker.executors: 2
+      topology.max.spout.pending: 200
+      topology.workers: 2
+
+      # FileReadWordCount config params
+      component.spout_num: 2
+      component.split_bolt_num: 4
+      component.count_bolt_num: 4
+
+
+  - benchmark.enabled: true
+    benchmark.label: "speed-of-light"
+    topology.class: org.apache.storm.benchmark.topologies.SOL
+
+
+
+    topology.config:
+      #storm config params
+      topology.name: "sol"
+      topology.acker.executors: 2
+      topology.max.spout.pending: 200
+      topology.workers: 2
+
+      benchmark.warmup.time: 10000
+
+      # SOL config params
+      component.spout_num: 1
+      component.split_bolt_num: 4
+      component.count_bolt_num: 4
+      # how many bolts in the topology
+      benchmarks.level: 1
+      # message size in bytes
+      message.size: 1024

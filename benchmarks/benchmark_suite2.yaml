@@ -1,0 +1,63 @@
+benchmark-suite:
+  - benchmark.enabled: true
+    benchmark.label: "trident-wordcount"
+    topology.class: org.apache.storm.benchmark.topologies.TridentFileReadWordCount
+
+    benchmark.poll.interval: 60000
+    benchmark.runtime: 1200000
+    benchmark.report.dir: /Users/tgoetz/tmp
+
+    topology.config:
+      #storm config params
+      topology.name: "trident-wordcount"
+      topology.acker.executors: 3
+      topology.max.spout.pending: 4
+      topology.workers: 3
+
+      # TridentFileReadWordCount config params
+      trident.spout.batch.size: 2000
+      component.spout_num: 46
+      component.count_bolt_num: 46
+
+  - benchmark.enabled: false
+    benchmark.label: "core-wordcount"
+    topology.class: org.apache.storm.benchmark.topologies.FileReadWordCount
+    benchmark.poll.interval: 60000
+    benchmark.runtime: 300000
+    benchmark.report.dir: /Users/tgoetz/tmp
+
+    topology.config:
+      #storm config params
+      topology.name: "wordcount"
+      topology.acker.executors: 2
+      topology.max.spout.pending: 200
+      topology.workers: 2
+
+      # FileReadWordCount config params
+      component.spout_num: 1
+      component.split_bolt_num: 4
+      component.count_bolt_num: 4
+
+
+  - benchmark.enabled: false
+    benchmark.label: "speed-of-light"
+    topology.class: org.apache.storm.benchmark.topologies.SOL
+    benchmark.poll.interval: 60000
+    benchmark.runtime: 300000
+    benchmark.report.dir: /Users/tgoetz/tmp
+
+    topology.config:
+      #storm config params
+      topology.name: "sol"
+      topology.acker.executors: 2
+      topology.max.spout.pending: 200
+      topology.workers: 2
+
+      # SOL config params
+      component.spout_num: 1
+      component.split_bolt_num: 4
+      component.count_bolt_num: 4
+      # how many bolts in the topology
+      benchmarks.level: 1
+      # message size in bytes
+      message.size: 1024
