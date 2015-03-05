@@ -1,15 +1,19 @@
+# Assumes cluster is virtual (e.g. Vagrant):
+#  - 1 zookeeper node
+#  - 1 nimbus/storm-ui nodek
+#  - 2 supervisotr/worker nodes
+#
+# Obviously throughput and general performance will be low.
+# If you want to make Storm look bad, use this benchmark.
+#
 # global report config
 global:
   benchmark.poll.interval: 60000
   benchmark.runtime: 300000
   benchmark.report.dir: /Users/tgoetz/tmp
 
-  # TODO how long should we allow a topology to warm up before we start sampling?
-  #benchmark.warmup.time: 100000
-
-
 benchmarks:
-  - benchmark.enabled: false
+  - benchmark.enabled: true
     benchmark.label: "trident-wordcount"
     topology.class: org.apache.storm.benchmark.topologies.TridentFileReadWordCount
 
@@ -29,10 +33,9 @@ benchmarks:
       component.spout_num: 4
       component.count_bolt_num: 4
 
-  - benchmark.enabled: false
+  - benchmark.enabled: true
     benchmark.label: "core-wordcount"
     topology.class: org.apache.storm.benchmark.topologies.FileReadWordCount
-
     topology.config:
       #storm config params
       topology.name: "core-wordcount"
@@ -45,13 +48,9 @@ benchmarks:
       component.split_bolt_num: 4
       component.count_bolt_num: 4
 
-
   - benchmark.enabled: true
     benchmark.label: "speed-of-light"
     topology.class: org.apache.storm.benchmark.topologies.SOL
-
-
-
     topology.config:
       #storm config params
       topology.name: "sol"
