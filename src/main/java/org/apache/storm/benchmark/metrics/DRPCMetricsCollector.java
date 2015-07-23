@@ -104,7 +104,7 @@ public class DRPCMetricsCollector implements IMetricsCollector {
 
     private long execute(String arg, PrintWriter writer) throws Exception {
         LOG.debug(String.format("executing %s('%s')", function, arg));
-        DRPCClient client = new DRPCClient(server, port);
+        DRPCClient client = new DRPCClient(null, server, port);
         long start = System.currentTimeMillis();
         String result = client.execute(function, arg);
         long end = System.currentTimeMillis();

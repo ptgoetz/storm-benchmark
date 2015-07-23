@@ -18,10 +18,9 @@
 package org.apache.storm.benchmark.tools;
 
 import org.apache.commons.cli.*;
-import org.apache.storm.benchmark.BenchmarkConstants;
+import org.apache.storm.snakeyaml.Yaml;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.yaml.snakeyaml.Yaml;
 
 import java.io.FileInputStream;
 import java.io.InputStream;

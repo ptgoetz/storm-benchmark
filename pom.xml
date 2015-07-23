@@ -27,7 +27,7 @@
   <name>storm-benchmark</name>
 
   <properties>
-    <storm.version>0.9.4-SNAPSHOT</storm.version>
+    <storm.version>0.10.0-beta1</storm.version>
   </properties>
   <dependencies>
     <dependency>

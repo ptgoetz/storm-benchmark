@@ -25,7 +25,7 @@ import backtype.storm.utils.Utils;
 import org.apache.log4j.Logger;
 import org.apache.storm.benchmark.api.*;
 import org.apache.storm.benchmark.metrics.IMetricsCollector;
-import org.yaml.snakeyaml.Yaml;
+import org.apache.storm.snakeyaml.Yaml;
 
 import java.io.File;
 import java.io.FileInputStream;
