@@ -62,13 +62,6 @@ public class BenchmarkRunner {
         CommandLineParser parser = new BasicParser();
         CommandLine cmd = parser.parse(options, args);
 
-        if (cmd.getArgs().length != 2) {
-            usage(options);
-            System.exit(1);
-        }
-
-
-
         String[] argArray = cmd.getArgs();
         runBenchmarks(cmd);
         LOG.info("Benchmark run complete.");
