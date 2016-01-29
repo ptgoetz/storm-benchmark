@@ -18,8 +18,8 @@
 
 package org.apache.storm.benchmark.util;
 
-import backtype.storm.generated.ClusterSummary;
-import backtype.storm.generated.TopologySummary;
+import org.apache.storm.generated.ClusterSummary;
+import org.apache.storm.generated.TopologySummary;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.testng.annotations.Test;

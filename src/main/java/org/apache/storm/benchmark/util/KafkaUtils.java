@@ -18,12 +18,12 @@
 
 package org.apache.storm.benchmark.util;
 
-import backtype.storm.spout.MultiScheme;
-import backtype.storm.utils.Utils;
-import storm.kafka.BrokerHosts;
-import storm.kafka.SpoutConfig;
-import storm.kafka.ZkHosts;
-import storm.kafka.trident.TridentKafkaConfig;
+import org.apache.storm.spout.MultiScheme;
+import org.apache.storm.utils.Utils;
+import org.apache.storm.kafka.BrokerHosts;
+import org.apache.storm.kafka.SpoutConfig;
+import org.apache.storm.kafka.ZkHosts;
+import org.apache.storm.kafka.trident.TridentKafkaConfig;
 
 import java.util.ArrayList;
 import java.util.Map;

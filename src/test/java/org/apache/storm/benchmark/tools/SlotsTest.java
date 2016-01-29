@@ -18,7 +18,7 @@
 
 package org.apache.storm.benchmark.tools;
 
-import backtype.storm.utils.MutableObject;
+import org.apache.storm.utils.MutableObject;
 import org.apache.storm.benchmark.lib.reducer.Reducer;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;

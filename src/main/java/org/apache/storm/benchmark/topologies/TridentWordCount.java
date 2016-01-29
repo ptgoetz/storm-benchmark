@@ -18,19 +18,19 @@
 
 package org.apache.storm.benchmark.topologies;
 
-import backtype.storm.Config;
-import backtype.storm.generated.StormTopology;
-import backtype.storm.spout.SchemeAsMultiScheme;
-import backtype.storm.tuple.Fields;
+import org.apache.storm.Config;
+import org.apache.storm.generated.StormTopology;
+import org.apache.storm.spout.SchemeAsMultiScheme;
+import org.apache.storm.tuple.Fields;
 import org.apache.storm.benchmark.lib.operation.WordSplit;
 import org.apache.storm.benchmark.util.BenchmarkUtils;
 import org.apache.storm.benchmark.util.KafkaUtils;
-import storm.kafka.StringScheme;
-import storm.kafka.trident.TransactionalTridentKafkaSpout;
-import storm.trident.TridentTopology;
-import storm.trident.operation.builtin.Count;
-import storm.trident.spout.IPartitionedTridentSpout;
-import storm.trident.testing.MemoryMapState;
+import org.apache.storm.kafka.StringScheme;
+import org.apache.storm.kafka.trident.TransactionalTridentKafkaSpout;
+import org.apache.storm.trident.TridentTopology;
+import org.apache.storm.trident.operation.builtin.Count;
+import org.apache.storm.trident.spout.IPartitionedTridentSpout;
+import org.apache.storm.trident.testing.MemoryMapState;
 
 
 public class TridentWordCount extends StormBenchmark {

@@ -18,8 +18,8 @@
 
 package org.apache.storm.benchmark.topologies;
 
-import backtype.storm.Config;
-import backtype.storm.generated.StormTopology;
+import org.apache.storm.Config;
+import org.apache.storm.generated.StormTopology;
 import org.apache.storm.benchmark.metrics.BasicMetricsCollector;
 import org.apache.storm.benchmark.metrics.DRPCMetricsCollector;
 import org.apache.storm.benchmark.metrics.IMetricsCollector;

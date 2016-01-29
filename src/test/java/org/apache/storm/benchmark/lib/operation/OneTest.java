@@ -19,7 +19,7 @@
 package org.apache.storm.benchmark.lib.operation;
 
 import org.testng.annotations.Test;
-import storm.trident.tuple.TridentTuple;
+import org.apache.storm.trident.tuple.TridentTuple;
 
 import static org.fest.assertions.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;

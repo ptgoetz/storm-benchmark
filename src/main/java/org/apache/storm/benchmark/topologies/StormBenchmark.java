@@ -18,8 +18,8 @@
 
 package org.apache.storm.benchmark.topologies;
 
-import backtype.storm.Config;
-import backtype.storm.generated.StormTopology;
+import org.apache.storm.Config;
+import org.apache.storm.generated.StormTopology;
 import com.google.common.collect.Sets;
 import org.apache.log4j.Logger;
 import org.apache.storm.benchmark.api.Benchmark;

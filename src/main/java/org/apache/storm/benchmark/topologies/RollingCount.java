@@ -18,11 +18,11 @@
 
 package org.apache.storm.benchmark.topologies;
 
-import backtype.storm.Config;
-import backtype.storm.generated.StormTopology;
-import backtype.storm.topology.IRichSpout;
-import backtype.storm.topology.TopologyBuilder;
-import backtype.storm.tuple.Fields;
+import org.apache.storm.Config;
+import org.apache.storm.generated.StormTopology;
+import org.apache.storm.topology.IRichSpout;
+import org.apache.storm.topology.TopologyBuilder;
+import org.apache.storm.tuple.Fields;
 import org.apache.storm.benchmark.lib.bolt.RollingBolt;
 import org.apache.storm.benchmark.lib.bolt.RollingCountBolt;
 import org.apache.storm.benchmark.lib.spout.FileReadSpout;

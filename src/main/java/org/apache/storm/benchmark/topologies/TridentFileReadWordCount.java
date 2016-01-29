@@ -1,15 +1,15 @@
 package org.apache.storm.benchmark.topologies;
 
-import backtype.storm.Config;
-import backtype.storm.generated.StormTopology;
-import backtype.storm.tuple.Fields;
+import org.apache.storm.Config;
+import org.apache.storm.generated.StormTopology;
+import org.apache.storm.tuple.Fields;
 import org.apache.storm.benchmark.lib.spout.TridentFileReadSpout;
 import org.apache.storm.benchmark.util.BenchmarkUtils;
-import storm.trident.TridentState;
-import storm.trident.TridentTopology;
-import storm.trident.operation.builtin.Count;
-import storm.trident.testing.MemoryMapState;
-import storm.trident.testing.Split;
+import org.apache.storm.trident.TridentState;
+import org.apache.storm.trident.TridentTopology;
+import org.apache.storm.trident.operation.builtin.Count;
+import org.apache.storm.trident.testing.MemoryMapState;
+import org.apache.storm.trident.testing.Split;
 
 public class TridentFileReadWordCount extends StormBenchmark {
 

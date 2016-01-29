@@ -18,7 +18,7 @@
 
 package org.apache.storm.benchmark.util;
 
-import backtype.storm.generated.ComponentCommon;
+import org.apache.storm.generated.ComponentCommon;
 
 import static org.fest.assertions.api.Assertions.assertThat;
 

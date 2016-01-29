@@ -18,21 +18,21 @@
 
 package org.apache.storm.benchmark.producers.kafka;
 
-import backtype.storm.Config;
-import backtype.storm.generated.StormTopology;
-import backtype.storm.spout.SpoutOutputCollector;
-import backtype.storm.task.TopologyContext;
-import backtype.storm.topology.IRichBolt;
-import backtype.storm.topology.IRichSpout;
-import backtype.storm.topology.OutputFieldsDeclarer;
-import backtype.storm.topology.TopologyBuilder;
-import backtype.storm.topology.base.BaseRichSpout;
-import backtype.storm.tuple.Values;
-import backtype.storm.utils.Utils;
+import org.apache.storm.Config;
+import org.apache.storm.generated.StormTopology;
+import org.apache.storm.spout.SpoutOutputCollector;
+import org.apache.storm.task.TopologyContext;
+import org.apache.storm.topology.IRichBolt;
+import org.apache.storm.topology.IRichSpout;
+import org.apache.storm.topology.OutputFieldsDeclarer;
+import org.apache.storm.topology.TopologyBuilder;
+import org.apache.storm.topology.base.BaseRichSpout;
+import org.apache.storm.tuple.Values;
+import org.apache.storm.utils.Utils;
 import org.apache.storm.benchmark.api.Producer;
 import org.apache.storm.benchmark.util.BenchmarkUtils;
 import org.apache.storm.benchmark.util.KafkaUtils;
-import storm.kafka.bolt.KafkaBolt;
+import org.apache.storm.kafka.bolt.KafkaBolt;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -82,8 +82,8 @@ public abstract class KafkaProducer extends Producer {
         brokerConfig.put("serializer.class", "kafka.serializer.StringEncoder");
         brokerConfig.put("key.serializer.class", "kafka.serializer.StringEncoder");
         brokerConfig.put("request.required.acks", "1");
-        kafkaConfig.put(KafkaBolt.KAFKA_BROKER_PROPERTIES, brokerConfig);
-        kafkaConfig.put(KafkaBolt.TOPIC, topic);
+//        kafkaConfig.put(KafkaBolt.KAFKA_BROKER_PROPERTIES, brokerConfig);
+        brokerConfig.put(KafkaBolt.TOPIC, topic);
         return kafkaConfig;
     }
 

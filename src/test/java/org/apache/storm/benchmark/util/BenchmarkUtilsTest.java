@@ -18,7 +18,7 @@
 
 package org.apache.storm.benchmark.util;
 
-import backtype.storm.Config;
+import org.apache.storm.Config;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;

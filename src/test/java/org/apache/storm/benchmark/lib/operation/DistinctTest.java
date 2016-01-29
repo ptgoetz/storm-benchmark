@@ -20,7 +20,7 @@ package org.apache.storm.benchmark.lib.operation;
 
 import com.google.common.collect.Sets;
 import org.testng.annotations.Test;
-import storm.trident.tuple.TridentTuple;
+import org.apache.storm.trident.tuple.TridentTuple;
 
 import java.util.HashSet;
 import java.util.Set;

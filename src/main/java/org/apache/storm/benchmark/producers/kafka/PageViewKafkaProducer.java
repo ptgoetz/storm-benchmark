@@ -18,8 +18,8 @@
 
 package org.apache.storm.benchmark.producers.kafka;
 
-import backtype.storm.Config;
-import backtype.storm.generated.StormTopology;
+import org.apache.storm.Config;
+import org.apache.storm.generated.StormTopology;
 import org.apache.storm.benchmark.lib.spout.pageview.PageViewGenerator;
 
 public class PageViewKafkaProducer extends KafkaProducer {

@@ -18,9 +18,9 @@
 
 package org.apache.storm.benchmark.producers.kafka;
 
-import backtype.storm.Config;
-import backtype.storm.generated.StormTopology;
-import backtype.storm.utils.Utils;
+import org.apache.storm.Config;
+import org.apache.storm.generated.StormTopology;
+import org.apache.storm.utils.Utils;
 import org.apache.storm.benchmark.util.TestUtils;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;

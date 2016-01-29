@@ -18,12 +18,12 @@
 
 package org.apache.storm.benchmark.tools;
 
-import backtype.storm.Config;
-import backtype.storm.LocalCluster;
-import backtype.storm.generated.AlreadyAliveException;
-import backtype.storm.generated.InvalidTopologyException;
-import backtype.storm.generated.StormTopology;
-import backtype.storm.utils.Utils;
+import org.apache.storm.Config;
+import org.apache.storm.LocalCluster;
+import org.apache.storm.generated.AlreadyAliveException;
+import org.apache.storm.generated.InvalidTopologyException;
+import org.apache.storm.generated.StormTopology;
+import org.apache.storm.utils.Utils;
 import org.apache.log4j.Logger;
 import org.apache.storm.benchmark.api.IBenchmark;
 import org.apache.storm.benchmark.metrics.IMetricsCollector;
@@ -36,7 +36,7 @@ public class LocalRunner {
     private static final Logger LOG = Logger.getLogger(Runner.class);
     private static final String PACKAGE = "storm.benchmark.benchmarks";
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) throws Throwable {
         if (null == args || args.length < 1) {
             throw new IllegalArgumentException("no benchmark is set");
         }
@@ -45,7 +45,7 @@ public class LocalRunner {
 
     private static void run(String name)
             throws ClassNotFoundException, IllegalAccessException,
-            InstantiationException, AlreadyAliveException, InvalidTopologyException {
+            InstantiationException, Throwable {
         LOG.info("running benchmark " + name);
         IBenchmark benchmark = (IBenchmark) Runner.getApplicationFromName(PACKAGE + "." + name);
         Config config = new Config();

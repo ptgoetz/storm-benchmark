@@ -25,8 +25,8 @@ package org.apache.storm.benchmark.metrics;
  * receiving the result
  */
 
-import backtype.storm.Config;
-import backtype.storm.utils.DRPCClient;
+import org.apache.storm.Config;
+import org.apache.storm.utils.DRPCClient;
 import org.apache.log4j.Logger;
 import org.apache.storm.benchmark.BenchmarkConstants;
 import org.apache.storm.benchmark.util.FileUtils;

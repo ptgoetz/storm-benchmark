@@ -27,14 +27,14 @@
   <name>storm-benchmark</name>
 
   <properties>
-    <storm.version>0.10.0-beta1</storm.version>
+    <storm.version>1.0.0-SNAPSHOT</storm.version>
   </properties>
   <dependencies>
     <dependency>
       <groupId>org.apache.storm</groupId>
       <artifactId>storm-core</artifactId>
       <version>${storm.version}</version>
-      <scope>provided</scope>
+      <!--<scope>provided</scope>-->
     </dependency>
       <dependency>
           <groupId>commons-cli</groupId>
@@ -143,8 +143,8 @@
         <version>3.0</version>
         <configuration>
           <fork>true</fork>
-          <source>1.6</source>
-          <target>1.6</target>
+          <source>1.7</source>
+          <target>1.7</target>
         </configuration>
       </plugin>
       <plugin>

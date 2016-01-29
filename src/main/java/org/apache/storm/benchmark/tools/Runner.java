@@ -18,14 +18,14 @@
 
 package org.apache.storm.benchmark.tools;
 
-import backtype.storm.Config;
-import backtype.storm.StormSubmitter;
-import backtype.storm.generated.StormTopology;
-import backtype.storm.utils.Utils;
+import org.apache.storm.Config;
+import org.apache.storm.StormSubmitter;
+import org.apache.storm.generated.StormTopology;
+import org.apache.storm.shade.org.yaml.snakeyaml.Yaml;
+import org.apache.storm.utils.Utils;
 import org.apache.log4j.Logger;
 import org.apache.storm.benchmark.api.*;
 import org.apache.storm.benchmark.metrics.IMetricsCollector;
-import org.apache.storm.snakeyaml.Yaml;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -87,10 +87,10 @@ public class Runner {
             config.put("nimbus.thrift.port", 6627);
         }
         if(!config.containsKey("storm.messaging.transport")){
-            config.put("storm.messaging.transport", "backtype.storm.messaging.netty.Context");
+            config.put("storm.messaging.transport", "org.apache.storm.messaging.netty.Context");
         }
         if(!config.containsKey("storm.thrift.transport")){
-            config.put("storm.thrift.transport", "backtype.storm.security.auth.SimpleTransportPlugin");
+            config.put("storm.thrift.transport", "org.apache.storm.security.auth.SimpleTransportPlugin");
         }
     }
 

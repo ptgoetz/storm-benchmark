@@ -18,7 +18,7 @@
 package org.apache.storm.benchmark.tools;
 
 import org.apache.commons.cli.*;
-import org.apache.storm.snakeyaml.Yaml;
+import org.apache.storm.shade.org.yaml.snakeyaml.Yaml;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
