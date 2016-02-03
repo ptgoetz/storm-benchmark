@@ -8,7 +8,7 @@
 #
 # global report config
 global:
-  benchmark.poll.interval: 60000
+  benchmark.poll.interval: 30000
   benchmark.runtime: 300000
   benchmark.report.dir: /Users/tgoetz/storm-reports
 
@@ -32,6 +32,7 @@ benchmarks:
       trident.spout.batch.size: 2000
       component.spout_num: 4
       component.count_bolt_num: 4
+
 
   - benchmark.enabled: true
     benchmark.label: "core-wordcount"

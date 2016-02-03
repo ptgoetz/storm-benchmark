@@ -20,7 +20,7 @@ usage: storm-benchmark [options] <benchmark_jar> <benchmark_config>
  -t,--time <ms>     How long to run each benchmark in ms.
 ```
 
-`java -jar target/storm-benchmark-0.1.0-jar-with-dependencies.jar target/storm-benchmark-0.1.0-jar-with-dependencies.jar benchmark_config.yaml`
+`java -jar benchmark-runner/target/storm-benchmark-runner-0.1.0-jar-with-dependencies.jar benchmark-core/target/storm-benchmark-core-0.1.0-jar-with-dependencies.jar benchmarks/vagrant_benchmarks.yaml`
 
 
 ## Benchmark Configuration

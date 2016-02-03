@@ -20,11 +20,18 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.apache.storm</groupId>
-  <artifactId>storm-benchmark</artifactId>
+
+  <parent>
+    <groupId>org.apache.storm</groupId>
+    <artifactId>storm-benchmark</artifactId>
+    <version>0.1.0</version>
+  </parent>
+
+
+  <!--<groupId>org.apache.storm</groupId>-->
+  <artifactId>storm-benchmark-core</artifactId>
   <packaging>jar</packaging>
-  <version>0.1.0</version>
-  <name>storm-benchmark</name>
+  <!--<version>0.1.0</version>-->
 
   <properties>
     <storm.version>1.0.0-SNAPSHOT</storm.version>
@@ -34,7 +41,7 @@
       <groupId>org.apache.storm</groupId>
       <artifactId>storm-core</artifactId>
       <version>${storm.version}</version>
-      <!--<scope>provided</scope>-->
+      <scope>${provided.scope}</scope>
     </dependency>
       <dependency>
           <groupId>commons-cli</groupId>

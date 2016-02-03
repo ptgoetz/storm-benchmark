@@ -72,7 +72,9 @@ public class Runner {
 
             try {
                 Map<String, Object> localConf = (Map<String, Object>) yaml.load(new FileInputStream(confFile));
-                config.putAll(localConf);
+                if(localConf != null) {
+                    config.putAll(localConf);
+                }
             } catch (FileNotFoundException e) {
                 LOG.warn("Local storm config not found.", e);
             }
@@ -91,6 +93,18 @@ public class Runner {
         }
         if(!config.containsKey("storm.thrift.transport")){
             config.put("storm.thrift.transport", "org.apache.storm.security.auth.SimpleTransportPlugin");
+        }
+        if(!config.containsKey("storm.nimbus.retry.times")){
+            config.put("storm.nimbus.retry.times", 5);
+        }
+        if(!config.containsKey("storm.nimbus.retry.interval.millis")){
+            config.put("storm.nimbus.retry.interval.millis", 2000);
+        }
+        if(!config.containsKey("storm.nimbus.retry.intervalceiling.millis")){
+            config.put("storm.nimbus.retry.intervalceiling.millis", 60000);
+        }
+        if(!config.containsKey("nimbus.thrift.max_buffer_size")){
+            config.put("nimbus.thrift.max_buffer_size", 1048576);
         }
     }
 
