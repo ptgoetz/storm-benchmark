@@ -49,7 +49,7 @@ public class MetricsSample {
         config.put("nimbus.seeds", seeds);
         Nimbus.Client nimbus = NimbusClient.getConfiguredClient(config).getClient();
 
-        factory(nimbus, "core-wordcount");
+        factory(nimbus, "trident-wordcount");
 
     }
 
@@ -129,12 +129,12 @@ public class MetricsSample {
                     }
                 }
             }
-//            LOG.info("*** read transferred totals...");
+            LOG.info("*** read transferred totals...");
 
             // emitted totals
             Map<String,Map<String,Long>> emitted = execuatorStats.get_emitted();
             if(emitted != null) {
-//                LOG.info("emitted: {}", emitted);
+                LOG.info("emitted: {}", emitted);
                 Map<String, Long> emMap = emitted.get(":all-time");
 
                 for (String key : emMap.keySet()) {
@@ -147,11 +147,11 @@ public class MetricsSample {
                     }
                 }
             }
-//            LOG.info("*** read emitted totals...");
+            LOG.info("*** read emitted totals...");
 
             // we found a spout
             if(executorSpecificStats.isSet(2)) { // spout
-//                LOG.info("Found a spout.");
+                LOG.info("Found a spout.");
 
                 SpoutStats spoutStats = executorSpecificStats.get_spout();
                 Map<String, Long> acked = spoutStats.get_acked().get(":all-time");
@@ -181,7 +181,7 @@ public class MetricsSample {
 
             // we found a bolt
             if(executorSpecificStats.isSet(1)) {
-//                LOG.info("ignoring bolt status.");
+                LOG.info("ignoring bolt status.");
             }
 
         } // end executor summary
